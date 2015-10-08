@@ -2,7 +2,7 @@
   "name": "jspm-hot-reloader",
   "version": "0.1.0",
   "description": "utility for hot reloading parts of your dependency tree",
-  "main": "index.js",
+  "main": "jspm-hot-reloader.js",
   "scripts": {
     "pretest": "standard",
     "test": "mocha"
