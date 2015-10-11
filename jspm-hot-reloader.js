@@ -9,11 +9,14 @@ class JspmHotReloader extends Emitter {
       this.emit('change', moduleName)
       this.hotReload(moduleName)
     })
-    this.deleteModule = (moduleToDelete) => {
-      let name = moduleToDelete.name
+  }
+  deleteModule (moduleToDelete) {
+    let name = moduleToDelete.name
+    if (this.modulesAlreadyDeleted.indexOf(name) === -1) {
       System.delete(name)
       this.emit('delete', name)
       console.log('deleted a module ', name)
+      this.modulesAlreadyDeleted.push(name)
     }
   }
   getModuleRecord (moduleName) {
@@ -32,13 +35,15 @@ class JspmHotReloader extends Emitter {
     })
   }
   hotReload (moduleName) {
+    const self = this
+    this.modulesAlreadyDeleted = []
     return this.getModuleRecord(moduleName).then(module => {
       this.deleteModule(module)
       const toReimport = []
       function deleteAllImporters (importersToBeDeleted) {
         importersToBeDeleted.forEach((importer) => {
-          this.deleteModule(importer.name)
-          if (importer.importers.length === 0) {
+          self.deleteModule(importer)
+          if (importer.importers.length === 0 && toReimport.indexOf(importer.name) === -1) {
             toReimport.push(importer.name)
           } else {
             // recourse
