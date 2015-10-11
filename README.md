@@ -13,6 +13,14 @@ System.import('jspm-hot-reloader').then(function(HotReloader){
   new HotReloader.default('http://localhost:8090')  //your chokidar-socket-emitter port
 })
 ```
+## Examples
+
+Boilerplate projects set up for fast&efficent hot reloading you can fork and use at will:
+- [Angular - NG6-starter](https://github.com/capaj/NG6-starter)
+- [React](https://github.com/capaj/postuj-hovna)
+- Aurelia - coming soon
+- Mithril.js - coming soon
+
 ## Why
 
 We're Javascript programmers. We should not be building our apps for development. Many folks dislike JSPM because of how slow it is. JSPM deserves another shot, because it can be faster, more robust and more reliable than any existing alternative. This simple package proves it. Webpack hot reloading tools pale in comparison. Especially for larger codebases, SPAs and such-jspm hot reloading modules are a crucial development tool.
