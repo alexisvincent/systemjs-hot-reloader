@@ -13,6 +13,9 @@ class JspmHotReloader extends Emitter {
   deleteModule (moduleToDelete) {
     let name = moduleToDelete.name
     if (this.modulesAlreadyDeleted.indexOf(name) === -1) {
+      if (typeof moduleToDelete.exports.__unload === 'function') {
+        moduleToDelete.exports.__unload() // calling module unload hook
+      }
       System.delete(name)
       this.emit('delete', name)
       console.log('deleted a module ', name)
