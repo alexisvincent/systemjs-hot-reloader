@@ -1,5 +1,5 @@
 # jspm-hot-reloader
-connects to [chokidar-socket-emitter](https://github.com/capaj/chokidar-socket-emitter) and reloads your JS modules as you change them. Should work with any client side framework. Not just React.
+connects to [chokidar-socket-emitter](https://github.com/capaj/chokidar-socket-emitter) and reloads your ES6 modules as you change them. Should work with any client side framework. Not just React.
 
 ## Install
 ```
