@@ -29,7 +29,10 @@ Boilerplate projects set up for fast&efficent hot reloading you can fork and use
 
 ## Why
 
-We're Javascript programmers. We should not be building our apps for development. Many folks dislike JSPM because of how slow it is. JSPM deserves another shot, because it can be faster, more robust and more reliable than any existing alternative. This simple package proves it. Webpack hot reloading tools pale in comparison. Especially for larger codebases, SPAs and such-reliable hot reloadable modules are a crucial development tool.
+We're Javascript programmers. We should not be building our apps for development. Many folks dislike JSPM because of how slow it is. JSPM deserves another shot, because it can be faster, more robust and more reliable than any existing alternative. This simple package proves it. Especially for larger codebases, SPAs and such-reliable hot reloadable modules are a crucial development tool. Webpack hot reloading tools are hacky-they might preserve component state, but they sacrifice robustness. Very often a change in a source code doesn't manifestate after webpacks hot reload. This will never happen with JSPM's hot reload.
+
+## Preserving state
+If you want some state to persist through hot reload, just put it in a module separate from the component. I personally use POJOs with observation, but you are free to use any kind of value store, as long as it sits in separate module from your reloaded component.
 
 ## How
 When a change event is emitted on socket.io, we match a module in System._loader.moduleRecords.
