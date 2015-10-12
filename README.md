@@ -9,7 +9,7 @@ jspm i github:capaj/jspm-hot-reloader
 ## Usage
 Put this in your index.html(or anywhere really)
 ```javascript
-System.import('jspm-hot-reloader').then(function(HotReloader){
+System.import('capaj/jspm-hot-reloader').then(function(HotReloader){
   new HotReloader.default('http://localhost:8090')  //your chokidar-socket-emitter port
 })
 ```
