@@ -1,5 +1,6 @@
 import socketIO from 'socket.io-client'
 import Emitter from 'weakee'
+import cloneDeep from 'lodash.clonedeep'
 
 class JspmHotReloader extends Emitter {
   constructor (backendUrl) {
@@ -18,7 +19,7 @@ class JspmHotReloader extends Emitter {
         moduleToDelete.exports.__unload() // calling module unload hook
       }
       System.delete(name)
-      this.emit('delete', name)
+      this.emit('deleted', moduleToDelete)
       console.log('deleted a module ', name)
     }
   }
@@ -39,6 +40,8 @@ class JspmHotReloader extends Emitter {
   }
   hotReload (moduleName) {
     const self = this
+    
+    this.moduleRecordsBackup = cloneDeep(System._loader.moduleRecords) // in case some module fails to import
     this.modulesJustDeleted = {}
     return this.getModuleRecord(moduleName).then(module => {
       this.deleteModule(module)
@@ -63,17 +66,17 @@ class JspmHotReloader extends Emitter {
       const promises = toReimport.map((moduleName) => {
         return System.import(moduleName).then(moduleReloaded => {
           console.log('reimported ', moduleName)
-        }, (err) => {
-          console.error(err)
-          // revert the module back, so that next hotReload works
-          System.set(moduleName, this.modulesJustDeleted[moduleName])
         })
       })
       return Promise.all(promises).then(() => {
         this.emit('allReimported', toReimport)
+      }, (err) => {
+        this.emit('error', err)
+        console.error(err)
+        System._loader.moduleRecords = this.moduleRecordsBackup
       })
     }, (err) => {
-      err
+      this.emit('moduleRecordNotFound', err)
       // not found any module for this file, not really an error
     })
   }
