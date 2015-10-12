@@ -22,7 +22,7 @@ You can drop the if statement, but it is nice and convenient to load reloader on
 
 Boilerplate projects set up for fast&efficent hot reloading you can fork and use at will:
 - [Angular - NG6-starter](https://github.com/capaj/NG6-starter)
-- [React](https://github.com/capaj/postuj-hovna)
+- [React](https://github.com/capaj/jspm-react)
 - Angular 2 - coming soon
 - Aurelia - coming soon
 - Mithril.js - coming soon
