@@ -9,10 +9,15 @@ jspm i github:capaj/jspm-hot-reloader
 ## Usage
 Put this in your index.html(or anywhere really)
 ```javascript
-System.import('capaj/jspm-hot-reloader').then(function(HotReloader){
-  new HotReloader.default('http://localhost:8090')  //your chokidar-socket-emitter port
-})
+
+if (location.origin.match(/localhost/)) { 
+  System.import('capaj/jspm-hot-reloader').then(function(HotReloader){
+    new HotReloader.default('http://localhost:8090')  // chokidar-socket-emitter port
+  })
+}
 ```
+You can drop the if statement, but it is nice and convenient to load reloader only for when on localhost.
+
 ## Examples
 
 Boilerplate projects set up for fast&efficent hot reloading you can fork and use at will:
