@@ -6,7 +6,7 @@
   "scripts": {
     "precommit": "npm test",
     "pretest": "node_modules/.bin/standard",
-    "test": "mocha"
+    "test": "node run-tests"
   },
   "repository": {
     "type": "git",
@@ -24,6 +24,8 @@
     "lodash.clonedeep": "^3.0.2"
   },
   "devDependencies": {
+    "babel": "^5.8.23",
+    "chai": "^3.3.0",
     "husky": "^0.10.1",
     "mocha": "^2.3.3",
     "standard": "^5.3.1"

@@ -40,7 +40,7 @@ class JspmHotReloader extends Emitter {
   }
   hotReload (moduleName) {
     const self = this
-    
+
     this.moduleRecordsBackup = cloneDeep(System._loader.moduleRecords) // in case some module fails to import
     this.modulesJustDeleted = {}
     return this.getModuleRecord(moduleName).then(module => {
