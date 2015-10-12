@@ -1,5 +1,5 @@
-import Emitter from 'weakee'
 import socketIO from 'socket.io-client'
+import Emitter from 'weakee'
 
 class JspmHotReloader extends Emitter {
   constructor (backendUrl) {
@@ -12,14 +12,14 @@ class JspmHotReloader extends Emitter {
   }
   deleteModule (moduleToDelete) {
     let name = moduleToDelete.name
-    if (this.modulesAlreadyDeleted.indexOf(name) === -1) {
+    if (!this.modulesJustDeleted[name]) {
+      this.modulesJustDeleted[name] = moduleToDelete
       if (typeof moduleToDelete.exports.__unload === 'function') {
         moduleToDelete.exports.__unload() // calling module unload hook
       }
       System.delete(name)
       this.emit('delete', name)
       console.log('deleted a module ', name)
-      this.modulesAlreadyDeleted.push(name)
     }
   }
   getModuleRecord (moduleName) {
@@ -39,7 +39,7 @@ class JspmHotReloader extends Emitter {
   }
   hotReload (moduleName) {
     const self = this
-    this.modulesAlreadyDeleted = []
+    this.modulesJustDeleted = {}
     return this.getModuleRecord(moduleName).then(module => {
       this.deleteModule(module)
       const toReimport = []
@@ -63,6 +63,10 @@ class JspmHotReloader extends Emitter {
       const promises = toReimport.map((moduleName) => {
         return System.import(moduleName).then(moduleReloaded => {
           console.log('reimported ', moduleName)
+        }, (err) => {
+          console.error(err)
+          // revert the module back, so that next hotReload works
+          System.set(moduleName, this.modulesJustDeleted[moduleName])
         })
       })
       return Promise.all(promises).then(() => {
