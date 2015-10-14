@@ -10,13 +10,49 @@ class JspmHotReloader extends Emitter {
       this.emit('change', moduleName)
       this.hotReload(moduleName)
     })
+    this.pushImporters(System.loads)
+  }
+  pushImporters (moduleMap, overwriteOlds) {
+    Object.keys(moduleMap).forEach((moduleName) => {
+      let mod = System.loads[moduleName]
+      if (!mod.importers) {
+        mod.importers = []
+      }
+      mod.deps.forEach((dependantName) => {
+        let normalizedDependantName = mod.depMap[dependantName]
+        let dependantMod = System.loads[normalizedDependantName]
+        if (!dependantMod.importers) {
+          dependantMod.importers = []
+        }
+        if (overwriteOlds) {
+          let imsIndex = dependantMod.importers.length
+          while (imsIndex--) {
+            if (dependantMod.importers[imsIndex].name === mod.name) {
+              dependantMod.importers[imsIndex] = mod
+              return
+            }
+          }
+        }
+        dependantMod.importers.push(mod)
+      })
+    })
   }
   deleteModule (moduleToDelete) {
     let name = moduleToDelete.name
     if (!this.modulesJustDeleted[name]) {
+      let exportedValue
       this.modulesJustDeleted[name] = moduleToDelete
-      if (typeof moduleToDelete.exports.__unload === 'function') {
-        moduleToDelete.exports.__unload() // calling module unload hook
+      if (!moduleToDelete.exports) {
+        // this is a module from System.loads
+        exportedValue = System.get(name)
+        if (!exportedValue) {
+          throw new Error('Not yet solved usecase, please reload whole page')
+        }
+      } else {
+        exportedValue = moduleToDelete.exports
+      }
+      if (typeof exportedValue.__unload === 'function') {
+        exportedValue.__unload() // calling module unload hook
       }
       System.delete(name)
       this.emit('deleted', moduleToDelete)
@@ -27,7 +63,11 @@ class JspmHotReloader extends Emitter {
     return System.normalize(moduleName).then(normalizedName => {
       let aModule = System._loader.moduleRecords[normalizedName]
       if (!aModule) {
-        return System.normalize(moduleName + '!').then(normalizedName => {
+        aModule = System.loads[normalizedName]
+        if (aModule) {
+          return aModule
+        }
+        return System.normalize(moduleName + '!').then(normalizedName => {  // .jsx! for example are stored like this
           let aModule = System._loader.moduleRecords[normalizedName]
           if (aModule) {
             return aModule
@@ -40,8 +80,11 @@ class JspmHotReloader extends Emitter {
   }
   hotReload (moduleName) {
     const self = this
+    this.backup = { // in case some module fails to import
+      moduleRecords: cloneDeep(System._loader.moduleRecords),
+      loads: cloneDeep(System.loads)
+    }
 
-    this.moduleRecordsBackup = cloneDeep(System._loader.moduleRecords) // in case some module fails to import
     this.modulesJustDeleted = {}
     return this.getModuleRecord(moduleName).then(module => {
       this.deleteModule(module)
@@ -70,10 +113,12 @@ class JspmHotReloader extends Emitter {
       })
       return Promise.all(promises).then(() => {
         this.emit('allReimported', toReimport)
+        this.pushImporters(this.modulesJustDeleted, true)
       }, (err) => {
         this.emit('error', err)
         console.error(err)
-        System._loader.moduleRecords = this.moduleRecordsBackup
+        System._loader.moduleRecords = self.backup.moduleRecords
+        System.loads = self.backup.loads
       })
     }, (err) => {
       this.emit('moduleRecordNotFound', err)
