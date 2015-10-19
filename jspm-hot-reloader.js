@@ -1,6 +1,8 @@
 import socketIO from 'socket.io-client'
 import Emitter from 'weakee'
 import cloneDeep from 'lodash.clonedeep'
+import { SourceMapConsumer } from 'source-map'
+import ErrorStackParser from 'error-stack-parser'
 
 class JspmHotReloader extends Emitter {
   constructor (backendUrl) {
@@ -11,6 +13,16 @@ class JspmHotReloader extends Emitter {
       this.hotReload(moduleName)
     })
     this.pushImporters(System.loads)
+
+    this.sourceMapCache = {}
+    let self = this
+    const systemTranslate = System.translate
+    System.translate = function (load) {
+      return systemTranslate.call(this, load).then(function (translated) {
+        self.sourceMapCache[load.name] = load.metadata.sourceMap
+        return translated
+      })
+    }
   }
   pushImporters (moduleMap, overwriteOlds) {
     Object.keys(moduleMap).forEach((moduleName) => {
@@ -117,6 +129,16 @@ class JspmHotReloader extends Emitter {
       }, (err) => {
         this.emit('error', err)
         console.error(err)
+        const stack = ErrorStackParser.parse(err)
+
+        const first = stack[0]
+        const fileName = first.fileName.substring(0, first.fileName.lastIndexOf('!'))
+        let smc = new SourceMapConsumer(System.sourceMaps[fileName])
+        var origPos = smc.originalPositionFor({
+          line: first.lineNumber,
+          column: first.columnNumber
+        })
+        self.socket.emit('errorThrown', origPos)
         System._loader.moduleRecords = self.backup.moduleRecords
         System.loads = self.backup.loads
       })

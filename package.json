@@ -1,6 +1,6 @@
 {
   "name": "jspm-hot-reloader",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "utility for hot reloading parts of your dependency tree",
   "main": "jspm-hot-reloader.js",
   "scripts": {
@@ -21,6 +21,8 @@
   "dependencies": {
     "socket.io-client": "^1.3.7",
     "weakee": "^0.9.1",
+    "source-map": "^0.5.1",
+    "error-stack-parser": "^1.2.3",
     "lodash.clonedeep": "^3.0.2"
   },
   "devDependencies": {
@@ -32,9 +34,11 @@
   },
   "jspm": {
     "dependencies": {
+      "error-stack-parser": "npm:error-stack-parser@^1.2.3",
+      "lodash.clonedeep": "npm:lodash.clonedeep@^3.0.2",
       "socket.io-client": "github:socketio/socket.io-client@^1.3.7",
-      "weakee": "npm:weakee@^0.9.1",
-      "lodash.clonedeep": "npm:lodash.clonedeep@^3.0.2"
+      "source-map": "npm:source-map@^0.5.1",
+      "weakee": "npm:weakee@^0.9.1"
     }
   }
 }
