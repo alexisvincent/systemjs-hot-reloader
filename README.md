@@ -40,7 +40,7 @@ If a match is found, we then aggressively delete the changed module and recursiv
 Last step is to import again all modules we deleted, by calling import on the one that changed-module hierarchy will make sure all get loaded again.
 
 ## Unload hook
-Any module, which has dangerous side effects and you want to hot-reload should export
+Any module, which leaves side effects in the browser and you want to hot-reload properly should export
 ```javascript
 export function __unload(){
 	// cleanup here
