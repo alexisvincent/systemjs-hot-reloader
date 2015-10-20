@@ -6,9 +6,16 @@ class JspmHotReloader extends Emitter {
   constructor (backendUrl) {
     super()
     this.socket = socketIO(backendUrl)
+    this.socket.on('connect', () => {
+      console.log('hot reload connected to watcher on ', backendUrl)
+    })
     this.socket.on('change', (moduleName) => {
       this.emit('change', moduleName)
-      this.hotReload(moduleName)
+      if (moduleName === 'index.html') {
+        document.location.reload(true)
+      }else {
+        this.hotReload(moduleName)
+      }
     })
     this.pushImporters(System.loads)
   }
