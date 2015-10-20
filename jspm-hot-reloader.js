@@ -95,32 +95,21 @@ class JspmHotReloader extends Emitter {
 
     this.modulesJustDeleted = {}
     return this.getModuleRecord(moduleName).then(module => {
+      const importers = module.importers
       this.deleteModule(module)
       const toReimport = []
-      function deleteAllImporters (importersToBeDeleted) {
-        importersToBeDeleted.forEach((importer) => {
-          self.deleteModule(importer)
-          if (importer.importers.length === 0 && toReimport.indexOf(importer.name) === -1) {
-            toReimport.push(importer.name)
-          } else {
-            // recourse
-            deleteAllImporters(importer.importers)
-          }
-        })
-      }
-      if (module.importers.length === 0) {
-        toReimport.push(module.name)
-      } else {
-        deleteAllImporters(module.importers)
-      }
 
-      const promises = toReimport.map((moduleName) => {
-        return System.import(moduleName).then(moduleReloaded => {
-          console.log('reimported ', moduleName)
+      System.import(module.name).then(moduleReloaded => {
+        console.log('reimported ', moduleName)
+        this.getModuleRecord(moduleName).then(reimportedMod => {
+          reimportedMod.importers = importers
+          toReimport.forEach((mod) => {
+            mod.execute()
+          })
         })
-      })
-      return Promise.all(promises).then(() => {
-        this.emit('allReimported', toReimport)
+
+      }).then(() => {
+        this.emit('allReimported')
         this.pushImporters(this.modulesJustDeleted, true)
         console.log('all reimported in ', new Date().getTime() - start, 'ms')
       }, (err) => {
@@ -129,6 +118,29 @@ class JspmHotReloader extends Emitter {
         System._loader.moduleRecords = self.backup.moduleRecords
         System.loads = self.backup.loads
       })
+      function deleteAllImporters (importersToBeDeleted) {
+        importersToBeDeleted.forEach((importer) => {
+          // self.deleteModule(importer)
+          if (importer.importers.length === 0 && toReimport.indexOf(importer.name) === -1) {
+            toReimport.push(importer)
+          } else {
+            // recourse
+            deleteAllImporters(importer.importers)
+          }
+        })
+      }
+      if (module.importers.length === 0) {
+        toReimport.push(module)
+      } else {
+        deleteAllImporters(module.importers)
+      }
+
+      // const promises = toReimport.map((moduleName) => {
+      //   return System.import(moduleName).then(moduleReloaded => {
+      //     console.log('reimported ', moduleName)
+      //   })
+      // })
+      // return Promise.all(promises)
     }, (err) => {
       this.emit('moduleRecordNotFound', err)
       // not found any module for this file, not really an error
