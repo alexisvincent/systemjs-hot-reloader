@@ -13,7 +13,7 @@ class JspmHotReloader extends Emitter {
       this.emit('change', moduleName)
       if (moduleName === 'index.html') {
         document.location.reload(true)
-      }else {
+      } else {
         this.hotReload(moduleName)
       }
     })
@@ -87,6 +87,7 @@ class JspmHotReloader extends Emitter {
   }
   hotReload (moduleName) {
     const self = this
+    const start = new Date().getTime()
     this.backup = { // in case some module fails to import
       moduleRecords: cloneDeep(System._loader.moduleRecords),
       loads: cloneDeep(System.loads)
@@ -121,6 +122,7 @@ class JspmHotReloader extends Emitter {
       return Promise.all(promises).then(() => {
         this.emit('allReimported', toReimport)
         this.pushImporters(this.modulesJustDeleted, true)
+        console.log('all reimported in ', new Date().getTime() - start, 'ms')
       }, (err) => {
         this.emit('error', err)
         console.error(err)
