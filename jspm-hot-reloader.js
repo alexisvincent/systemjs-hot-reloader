@@ -28,6 +28,9 @@ class JspmHotReloader extends Emitter {
       mod.deps.forEach((dependantName) => {
         let normalizedDependantName = mod.depMap[dependantName]
         let dependantMod = System.loads[normalizedDependantName]
+        if (!dependantMod) {
+          return
+        }
         if (!dependantMod.importers) {
           dependantMod.importers = []
         }
