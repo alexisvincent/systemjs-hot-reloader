@@ -20,7 +20,7 @@ You can drop the if statement, but it is nice and convenient to load reloader on
 
 ## Examples
 
-Boilerplate projects set up for hot reloading modules you can fork and use at will:
+Boilerplate projects set up for hot reloading modules you can fork and use with 3 simple terminal commands(git clone XXX && npm i && npm start):
 - [Angular - NG6-starter](https://github.com/capaj/NG6-starter)
 - [React](https://github.com/capaj/jspm-react)
 - [Angular 2](https://github.com/capaj/jspm-ng2)
