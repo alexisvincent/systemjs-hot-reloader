@@ -1,7 +1,7 @@
 # jspm-hot-reloader
 connects to an event source such as:
 - [chokidar-socket-emitter](https://github.com/capaj/chokidar-socket-emitter) 
-- atom plugin [jspm-dev-buddy](https://github.com/capaj/jspm-dev-buddy)
+- atom plugin [jspm-dev-buddy](https://atom.io/packages/jspm-dev-buddy)
 
 and reloads your ES6 modules as you change them. Similar to browserify hot module replacement, but running in your browser.
 
