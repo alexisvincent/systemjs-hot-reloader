@@ -1,7 +1,7 @@
 {
   "name": "jspm-hot-reloader",
-  "version": "0.2.1",
-  "description": "utility for hot reloading parts of your dependency tree",
+  "version": "0.3.0",
+  "description": "JSPM utility for hot reloading parts of your dependency tree",
   "main": "jspm-hot-reloader.js",
   "scripts": {
     "precommit": "npm test",
