@@ -20,7 +20,7 @@ if (location.origin.match(/localhost/)) {
   })
 }
 ```
-You can drop the if statement, but it is nice and convenient to load reloader only for when on localhost.
+You can drop the if statement, but it is nice and convenient to load reloader only for when on localhost. That way you can go into production without changing anything.
 
 ## Examples
 
@@ -58,7 +58,7 @@ Most of the credit for this awesome engineering feat should go to [Guy Bedford](
 ## Contributing
 Code is written in [![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
 
-Tests are run as usual:`npm test`
+Tests are run as usual: `npm test`
 
 1. fork it
 2. write your code
