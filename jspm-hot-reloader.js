@@ -11,7 +11,7 @@ class JspmHotReloader extends Emitter {
       this.socket.emit('identification', navigator.userAgent)
     })
     this.socket.on('change', (ev) => {
-      let moduleName = ev.path
+      let moduleName = ev.path.replace(location.pathname.slice(1), '')
       this.emit('change', moduleName)
       if (moduleName === 'index.html') {
         document.location.reload(true)
