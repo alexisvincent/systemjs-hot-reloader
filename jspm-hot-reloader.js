@@ -15,9 +15,7 @@ class JspmHotReloader extends Emitter {
       var args = arguments
       return originalSystemImport.apply(System, arguments).catch((err) => {
         self.lastFailedSystemImport = args
-        setTimeout(() => {
-          throw err
-        })
+        throw err
       })
     }
     this.socket = socketIO(backendUrl)
