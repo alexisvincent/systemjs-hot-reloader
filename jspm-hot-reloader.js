@@ -1,24 +1,55 @@
+/* eslint-env browser */
 import socketIO from 'socket.io-client'
 import Emitter from 'weakee'
 import cloneDeep from 'lodash.clonedeep'
 
 class JspmHotReloader extends Emitter {
   constructor (backendUrl) {
+    if (!backendUrl) {
+      backendUrl = '//' + document.location.host
+    }
     super()
+    const originalSystemImport = System.import
+    const self = this
+    System.import = function () {
+      var args = arguments
+      return originalSystemImport.apply(System, arguments).catch((err) => {
+        self.lastFailedSystemImport = args
+        setTimeout(() => {
+          throw err
+        })
+      })
+    }
     this.socket = socketIO(backendUrl)
     this.socket.on('connect', () => {
       console.log('hot reload connected to watcher on ', backendUrl)
       this.socket.emit('identification', navigator.userAgent)
     })
-    this.socket.on('change', (ev) => {
+    this.socket.on('change', (ev) => {  // babel doesn't work properly here, need self instead of this
       let moduleName = ev.path
       this.emit('change', moduleName)
       if (moduleName === 'index.html') {
         document.location.reload(true)
       } else {
-        this.hotReload(moduleName)
+        if (self.lastFailedSystemImport) {
+          return originalSystemImport.apply(System, self.lastFailedSystemImport).then(() => {
+            console.log(self.lastFailedSystemImport[0], 'broken module reimported succesfully')
+            self.lastFailedSystemImport = null
+          })
+        }
+        if (this.currentHotReload) {
+          this.currentHotReload = this.currentHotReload.then(() => {
+            // chain promises TODO we can solve this better- this often leads to the same module being reloaded mutliple times
+            return self.hotReload(moduleName)
+          })
+        } else {
+          this.currentHotReload = this.hotReload(moduleName)
+        }
       }
     })
+    window.onerror = (err) => {
+      this.socket.emit('error', err)  // emitting errors for jspm-dev-buddy
+    }
     this.socket.on('disconnect', () => {
       console.log('hot reload disconnected from ', backendUrl)
     })
