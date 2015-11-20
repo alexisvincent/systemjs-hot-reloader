@@ -9,11 +9,13 @@ class JspmHotReloader extends Emitter {
       backendUrl = '//' + document.location.host
     }
     super()
-    const originalSystemImport = System.import
+    this.originalSystemImport = System.import
     const self = this
+    self.clientImportedModules = []
     System.import = function () {
-      var args = arguments
-      return originalSystemImport.apply(System, arguments).catch((err) => {
+      const args = arguments
+      self.clientImportedModules.push(args[0])
+      return self.originalSystemImport.apply(System, arguments).catch((err) => {
         self.lastFailedSystemImport = args
         throw err
       })
@@ -30,7 +32,7 @@ class JspmHotReloader extends Emitter {
         document.location.reload(true)
       } else {
         if (self.lastFailedSystemImport) {
-          return originalSystemImport.apply(System, self.lastFailedSystemImport).then(() => {
+          return self.originalSystemImport.apply(System, self.lastFailedSystemImport).then(() => {
             console.log(self.lastFailedSystemImport[0], 'broken module reimported succesfully')
             self.lastFailedSystemImport = null
           })
@@ -81,7 +83,7 @@ class JspmHotReloader extends Emitter {
       })
     })
   }
-  deleteModule (moduleToDelete) {
+  deleteModule (moduleToDelete, from) {
     let name = moduleToDelete.name
     if (!this.modulesJustDeleted[name]) {
       let exportedValue
@@ -100,7 +102,7 @@ class JspmHotReloader extends Emitter {
       }
       System.delete(name)
       this.emit('deleted', moduleToDelete)
-      console.log('deleted a module ', name)
+      console.log('deleted a module ', name, ' because it has dependency on ', from)
     }
   }
   getModuleRecord (moduleName) {
@@ -130,35 +132,51 @@ class JspmHotReloader extends Emitter {
       loads: cloneDeep(System.loads)
     }
 
-    this.modulesJustDeleted = {}
+    this.modulesJustDeleted = {}  //TODO use weakmap
     return this.getModuleRecord(moduleName).then(module => {
-      this.deleteModule(module)
-      const toReimport = []
-      function deleteAllImporters (importersToBeDeleted) {
-        importersToBeDeleted.forEach((importer) => {
-          self.deleteModule(importer)
+      this.deleteModule(module, 'origin')
+      let toReimport = []
+
+      function deleteAllImporters (mod) {
+        let importersToBeDeleted = mod.importers
+        return importersToBeDeleted.map((importer) => {
+          if (self.modulesJustDeleted.hasOwnProperty(importer.name)) {
+            console.log('already deleted', importer.name)
+            return false
+          }
+          self.deleteModule(importer, mod.name)
           if (importer.importers.length === 0 && toReimport.indexOf(importer.name) === -1) {
             toReimport.push(importer.name)
+            return true
           } else {
             // recourse
-            deleteAllImporters(importer.importers)
+            let deleted = deleteAllImporters(importer)
+            return deleted
           }
         })
       }
+
       if (module.importers.length === 0) {
         toReimport.push(module.name)
       } else {
-        deleteAllImporters(module.importers)
+        let deleted = deleteAllImporters(module)
+        if (deleted.find((res) => res === false) !== undefined) {
+          toReimport.push(module.name)
+        }
       }
-
+      console.log('toReimport', toReimport)
+      if (toReimport.length === 0) {
+        toReimport = self.clientImportedModules
+      }
       const promises = toReimport.map((moduleName) => {
-        return System.import(moduleName).then(moduleReloaded => {
+        return this.originalSystemImport.call(System, moduleName).then(moduleReloaded => {
           console.log('reimported ', moduleName)
         })
       })
       return Promise.all(promises).then(() => {
         this.emit('allReimported', toReimport)
         this.pushImporters(this.modulesJustDeleted, true)
+        this.modulesJustDeleted = {}
         console.log('all reimported in ', new Date().getTime() - start, 'ms')
       }, (err) => {
         this.emit('error', err)

@@ -25,6 +25,14 @@ describe('jspm-hot-reloader', function () {
 
   })
 
+  it('should not go into infinite loop when dependencies have circular references', () => {
+
+  })
+
+  it('should remember what import calls were made since it loaded in importCallsMade', function () {
+    
+  })
+
   after(() => {
     // hr.socket.disconnect()
   })
