@@ -2,6 +2,8 @@
 import socketIO from 'socket.io-client'
 import Emitter from 'weakee'
 import cloneDeep from 'lodash.clonedeep'
+import debug from 'debug'
+const d = debug('jspm-hot-reloader')
 
 class JspmHotReloader extends Emitter {
   constructor (backendUrl) {
@@ -33,7 +35,7 @@ class JspmHotReloader extends Emitter {
       } else {
         if (self.lastFailedSystemImport) {
           return self.originalSystemImport.apply(System, self.lastFailedSystemImport).then(() => {
-            console.log(self.lastFailedSystemImport[0], 'broken module reimported succesfully')
+            d(self.lastFailedSystemImport[0], 'broken module reimported succesfully')
             self.lastFailedSystemImport = null
           })
         }
@@ -51,7 +53,7 @@ class JspmHotReloader extends Emitter {
       this.socket.emit('error', err)  // emitting errors for jspm-dev-buddy
     }
     this.socket.on('disconnect', () => {
-      console.log('hot reload disconnected from ', backendUrl)
+      d('hot reload disconnected from ', backendUrl)
     })
     this.pushImporters(System.loads)
   }
@@ -102,7 +104,7 @@ class JspmHotReloader extends Emitter {
       }
       System.delete(name)
       this.emit('deleted', moduleToDelete)
-      console.log('deleted a module ', name, ' because it has dependency on ', from)
+      d('deleted a module ', name, ' because it has dependency on ', from)
     }
   }
   getModuleRecord (moduleName) {
@@ -141,7 +143,7 @@ class JspmHotReloader extends Emitter {
         let importersToBeDeleted = mod.importers
         return importersToBeDeleted.map((importer) => {
           if (self.modulesJustDeleted.hasOwnProperty(importer.name)) {
-            console.log('already deleted', importer.name)
+            d('already deleted', importer.name)
             return false
           }
           self.deleteModule(importer, mod.name)
@@ -164,7 +166,7 @@ class JspmHotReloader extends Emitter {
           toReimport.push(module.name)
         }
       }
-      console.log('toReimport', toReimport)
+      d('toReimport', toReimport)
       if (toReimport.length === 0) {
         toReimport = self.clientImportedModules
       }
@@ -177,7 +179,7 @@ class JspmHotReloader extends Emitter {
         this.emit('allReimported', toReimport)
         this.pushImporters(this.modulesJustDeleted, true)
         this.modulesJustDeleted = {}
-        console.log('all reimported in ', new Date().getTime() - start, 'ms')
+        d('all reimported in ', new Date().getTime() - start, 'ms')
       }, (err) => {
         this.emit('error', err)
         console.error(err)
