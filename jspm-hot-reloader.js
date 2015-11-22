@@ -27,6 +27,10 @@ class JspmHotReloader extends Emitter {
       console.log('hot reload connected to watcher on ', backendUrl)
       this.socket.emit('identification', navigator.userAgent)
     })
+    this.socket.on('reload', () => {
+      console.log('whole page reload requested')
+      document.location.reload(true)
+    })
     this.socket.on('change', (ev) => {  // babel doesn't work properly here, need self instead of this
       let moduleName = ev.path
       this.emit('change', moduleName)
@@ -94,7 +98,8 @@ class JspmHotReloader extends Emitter {
         // this is a module from System.loads
         exportedValue = System.get(name)
         if (!exportedValue) {
-          throw new Error('Not yet solved usecase, please reload whole page')
+          d(`missing exported value on ${name}, reloading whole page because module record is broken`)
+          return document.location.reload(true)
         }
       } else {
         exportedValue = moduleToDelete.exports
@@ -134,7 +139,7 @@ class JspmHotReloader extends Emitter {
       loads: cloneDeep(System.loads)
     }
 
-    this.modulesJustDeleted = {}  //TODO use weakmap
+    this.modulesJustDeleted = {}  // TODO use weakmap
     return this.getModuleRecord(moduleName).then(module => {
       this.deleteModule(module, 'origin')
       let toReimport = []
