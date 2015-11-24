@@ -7,6 +7,7 @@ const d = debug('jspm-hot-reloader')
 
 class JspmHotReloader extends Emitter {
   constructor (backendUrl) {
+    System.trace = true
     if (!backendUrl) {
       backendUrl = '//' + document.location.host
     }
