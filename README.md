@@ -15,6 +15,7 @@ Put this in your index.html(or anywhere really)
 ```javascript
 
 if (location.origin.match(/localhost/)) { 
+  System.trace = true
   System.import('capaj/jspm-hot-reloader').then(function(HotReloader){
     new HotReloader.default('http://localhost:8090')  // chokidar-socket-emitter port
   })
