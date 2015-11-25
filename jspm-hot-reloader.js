@@ -1,6 +1,9 @@
+/* eslint-env browser */
 import socketIO from 'socket.io-client'
 import Emitter from 'weakee'
 import cloneDeep from 'lodash.clonedeep'
+import debug from 'debug'
+const d = debug('jspm-hot-reloader')
 
 function identity (value) {
   return value
@@ -8,23 +11,58 @@ function identity (value) {
 
 class JspmHotReloader extends Emitter {
   constructor (backendUrl, transform = identity) {
+    System.trace = true
+    if (!backendUrl) {
+      backendUrl = '//' + document.location.host
+    }
     super()
+    this.originalSystemImport = System.import
+    const self = this
+    self.clientImportedModules = []
+    System.import = function () {
+      const args = arguments
+      self.clientImportedModules.push(args[0])
+      return self.originalSystemImport.apply(System, arguments).catch((err) => {
+        self.lastFailedSystemImport = args
+        throw err
+      })
+    }
     this.socket = socketIO(backendUrl)
     this.socket.on('connect', () => {
       console.log('hot reload connected to watcher on ', backendUrl)
       this.socket.emit('identification', navigator.userAgent)
     })
-    this.socket.on('change', (ev) => {
+    this.socket.on('reload', () => {
+      console.log('whole page reload requested')
+      document.location.reload(true)
+    })
+    this.socket.on('change', (ev) => {  // babel doesn't work properly here, need self instead of this
       let moduleName = transform(ev.path)
       this.emit('change', moduleName)
       if (moduleName === 'index.html') {
         document.location.reload(true)
       } else {
-        this.hotReload(moduleName)
+        if (self.lastFailedSystemImport) {
+          return self.originalSystemImport.apply(System, self.lastFailedSystemImport).then(() => {
+            d(self.lastFailedSystemImport[0], 'broken module reimported succesfully')
+            self.lastFailedSystemImport = null
+          })
+        }
+        if (this.currentHotReload) {
+          this.currentHotReload = this.currentHotReload.then(() => {
+            // chain promises TODO we can solve this better- this often leads to the same module being reloaded mutliple times
+            return self.hotReload(moduleName)
+          })
+        } else {
+          this.currentHotReload = this.hotReload(moduleName)
+        }
       }
     })
+    window.onerror = (err) => {
+      this.socket.emit('error', err)  // emitting errors for jspm-dev-buddy
+    }
     this.socket.on('disconnect', () => {
-      console.log('hot reload disconnected from ', backendUrl)
+      d('hot reload disconnected from ', backendUrl)
     })
     this.pushImporters(System.loads)
   }
@@ -56,7 +94,7 @@ class JspmHotReloader extends Emitter {
       })
     })
   }
-  deleteModule (moduleToDelete) {
+  deleteModule (moduleToDelete, from) {
     let name = moduleToDelete.name
     if (!this.modulesJustDeleted[name]) {
       let exportedValue
@@ -65,7 +103,8 @@ class JspmHotReloader extends Emitter {
         // this is a module from System.loads
         exportedValue = System.get(name)
         if (!exportedValue) {
-          throw new Error('Not yet solved usecase, please reload whole page')
+          d(`missing exported value on ${name}, reloading whole page because module record is broken`)
+          return document.location.reload(true)
         }
       } else {
         exportedValue = moduleToDelete.exports
@@ -75,7 +114,7 @@ class JspmHotReloader extends Emitter {
       }
       System.delete(name)
       this.emit('deleted', moduleToDelete)
-      console.log('deleted a module ', name)
+      d('deleted a module ', name, ' because it has dependency on ', from)
     }
   }
   getModuleRecord (moduleName) {
@@ -105,36 +144,52 @@ class JspmHotReloader extends Emitter {
       loads: cloneDeep(System.loads)
     }
 
-    this.modulesJustDeleted = {}
+    this.modulesJustDeleted = {}  // TODO use weakmap
     return this.getModuleRecord(moduleName).then(module => {
-      this.deleteModule(module)
-      const toReimport = []
-      function deleteAllImporters (importersToBeDeleted) {
-        importersToBeDeleted.forEach((importer) => {
-          self.deleteModule(importer)
+      this.deleteModule(module, 'origin')
+      let toReimport = []
+
+      function deleteAllImporters (mod) {
+        let importersToBeDeleted = mod.importers
+        return importersToBeDeleted.map((importer) => {
+          if (self.modulesJustDeleted.hasOwnProperty(importer.name)) {
+            d('already deleted', importer.name)
+            return false
+          }
+          self.deleteModule(importer, mod.name)
           if (importer.importers.length === 0 && toReimport.indexOf(importer.name) === -1) {
             toReimport.push(importer.name)
+            return true
           } else {
             // recourse
-            deleteAllImporters(importer.importers)
+            let deleted = deleteAllImporters(importer)
+            return deleted
           }
         })
       }
+
       if (module.importers.length === 0) {
         toReimport.push(module.name)
       } else {
-        deleteAllImporters(module.importers)
+        let deleted = deleteAllImporters(module)
+        if (deleted.find((res) => res === false) !== undefined) {
+          toReimport.push(module.name)
+        }
       }
-
+      d('toReimport', toReimport)
+      if (toReimport.length === 0) {
+        toReimport = self.clientImportedModules
+      }
       const promises = toReimport.map((moduleName) => {
-        return System.import(moduleName).then(moduleReloaded => {
+        return this.originalSystemImport.call(System, moduleName).then(moduleReloaded => {
           console.log('reimported ', moduleName)
         })
       })
       return Promise.all(promises).then(() => {
         this.emit('allReimported', toReimport)
         this.pushImporters(this.modulesJustDeleted, true)
-        console.log('all reimported in ', new Date().getTime() - start, 'ms')
+        this.modulesJustDeleted = {}
+        d('all reimported in ', new Date().getTime() - start, 'ms')
       }, (err) => {
         this.emit('error', err)
         console.error(err)
