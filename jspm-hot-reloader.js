@@ -5,8 +5,12 @@ import cloneDeep from 'lodash.clonedeep'
 import debug from 'debug'
 const d = debug('jspm-hot-reloader')
 
+function identity (value) {
+  return value
+}
+
 class JspmHotReloader extends Emitter {
-  constructor (backendUrl) {
+  constructor (backendUrl, transform = identity) {
     System.trace = true
     if (!backendUrl) {
       backendUrl = '//' + document.location.host
@@ -33,7 +37,7 @@ class JspmHotReloader extends Emitter {
       document.location.reload(true)
     })
     this.socket.on('change', (ev) => {  // babel doesn't work properly here, need self instead of this
-      let moduleName = ev.path
+      let moduleName = transform(ev.path)
       this.emit('change', moduleName)
       if (moduleName === 'index.html') {
         document.location.reload(true)
