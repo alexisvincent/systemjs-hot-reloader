@@ -2,8 +2,12 @@ import socketIO from 'socket.io-client'
 import Emitter from 'weakee'
 import cloneDeep from 'lodash.clonedeep'
 
+function identity (value) {
+  return value
+}
+
 class JspmHotReloader extends Emitter {
-  constructor (backendUrl) {
+  constructor (backendUrl, transform = identity) {
     super()
     this.socket = socketIO(backendUrl)
     this.socket.on('connect', () => {
@@ -11,7 +15,7 @@ class JspmHotReloader extends Emitter {
       this.socket.emit('identification', navigator.userAgent)
     })
     this.socket.on('change', (ev) => {
-      let moduleName = ev.path.replace(document.location.pathname.slice(1), '')
+      let moduleName = transform(ev.path)
       this.emit('change', moduleName)
       if (moduleName === 'index.html') {
         document.location.reload(true)
