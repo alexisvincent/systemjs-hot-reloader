@@ -13,6 +13,14 @@ describe('jspm-hot-reloader', function () {
   global.System = {
     loads: []
   }
+  before(() => {
+    return System.import('capaj/jspm-hot-reloader').then(function(HotReloader){
+      hr = new HotReloader.default()  // chokidar-socket-emitter port
+      System.import('app').then(function () {
+        console.log('ran at ', new Date())
+      })
+    })
+  })
 
   it.skip('should listen to socket.io and call hotReload on itself, when a change event comes', () => {
     hr = new HotReloader()
@@ -31,6 +39,10 @@ describe('jspm-hot-reloader', function () {
 
   it('should remember what import calls were made since it loaded in importCallsMade', function () {
 
+  })
+
+  it('should transform path when pathTransform is a function', () => {
+    
   })
 
   after(() => {
