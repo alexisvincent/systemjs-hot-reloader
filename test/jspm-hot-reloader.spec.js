@@ -17,8 +17,9 @@ describe('jspm-hot-reloader', function () {
     userAgent: 'node.js'
   }
   let testApp
+  let chokidarServer
   before(() => {
-    chokidarEvEmitter({port: 8090, path: 'test/fixtures-es6-react-project/public/'})
+    chokidarServer = chokidarEvEmitter({port: 8090, path: 'test/fixtures-es6-react-project/public/'})
 
     return System.import('jspm-hot-reloader').then(function (HotReloader) {
       console.log(HotReloader.default)
@@ -53,7 +54,8 @@ describe('jspm-hot-reloader', function () {
 
   })
 
-  after(() => {
+  after((done) => {
     // hr.socket.disconnect()
+    chokidarServer.close(done)
   })
 })
