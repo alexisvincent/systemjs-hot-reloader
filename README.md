@@ -45,7 +45,11 @@ When a change event is emitted on socket.io, we match a module in System._loader
 If a match is found, we then aggressively delete the changed module and recursively all modules which import it directly or indirectly via other modules. This ensures we always have the latest version of code running, but we don't force the browser into unnecessary work.
 Last step is to import again all modules we deleted, by calling import on the one that changed-module hierarchy will make sure all get loaded again.
 
-## Unload hook
+## Hooks
+### Reload
+See example: https://github.com/capaj/jspm-hot-reloader/pull/23#issue-119311376
+
+### Unload
 Any module, which leaves side effects in the browser and you want to hot-reload properly should export
 ```javascript
 export function __unload(){
