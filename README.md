@@ -12,11 +12,12 @@ jspm i github:capaj/jspm-hot-reloader
 
 ## Usage
 
-Place the following JavaScript into `index.html`, __before__ you import your application files. When `jspm-hot-reloader` is imported, it will automatically set `System.trace = true` to enable hot reloading to work.
+Place the following JavaScript into `index.html`, __before__ you import your application files. When `jspm-hot-reloader` is imported, it requires that you set `System.trace = true` before first System.import.
 
 ```javascript
 
 if (location.origin.match(/localhost/)) { 
+  System.trace = true
   System.import('capaj/jspm-hot-reloader').then(function(HotReloader){
     new HotReloader.default('http://localhost:8090')  // chokidar-socket-emitter port
   })
