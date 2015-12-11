@@ -1,4 +1,4 @@
-# jspm-hot-reloader
+# systemjs-hot-reloader
 connects to an event source such as:
 - [chokidar-socket-emitter](https://github.com/capaj/chokidar-socket-emitter) 
 - atom plugin [jspm-dev-buddy](https://atom.io/packages/jspm-dev-buddy)
@@ -7,7 +7,7 @@ and reloads your ES6 modules as you change them. Similar to browserify hot modul
 
 ## Install
 ```
-jspm i github:capaj/jspm-hot-reloader
+jspm i github:capaj/systemjs-hot-reloader
 ```
 
 ## Usage
@@ -18,7 +18,7 @@ Place the following JavaScript into `index.html`, __before__ you import your app
 
 if (location.origin.match(/localhost/)) { 
   System.trace = true
-  System.import('capaj/jspm-hot-reloader').then(function(HotReloader){
+  System.import('capaj/systemjs-hot-reloader').then(function(HotReloader){
     new HotReloader.default('http://localhost:8090')  // chokidar-socket-emitter port
   })
 }
@@ -48,7 +48,7 @@ Last step is to import again all modules we deleted, by calling import on the on
 
 ## Hooks
 ### Reload
-See example: https://github.com/capaj/jspm-hot-reloader/pull/23#issue-119311376
+See example: https://github.com/capaj/systemjs-hot-reloader/pull/23#issue-119311376
 
 ### Unload
 Any module, which leaves side effects in the browser and you want to hot-reload properly should export
