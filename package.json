@@ -1,7 +1,7 @@
 {
-  "name": "jspm-hot-reloader",
-  "version": "0.4.3",
-  "description": "JSPM utility for hot reloading modules of your separately",
+  "name": "systemjs-hot-reloader",
+  "version": "0.5.0",
+  "description": "JSPM utility for hot reloading modules of your app separately",
   "main": "jspm-hot-reloader.js",
   "scripts": {
     "precommit": "npm test",
@@ -10,18 +10,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/capaj/jspm-hot-reloader.git"
+    "url": "git+https://github.com/capaj/systemjs-hot-reloader.git"
   },
   "author": "capajj@gmail.com",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/capaj/jspm-hot-reloader/issues"
+    "url": "https://github.com/capaj/systemjs-hot-reloader/issues"
   },
-  "homepage": "https://github.com/capaj/jspm-hot-reloader#readme",
+  "homepage": "https://github.com/capaj/systemjs-hot-reloader#readme",
   "dependencies": {
     "socket.io-client": "^1.3.7",
-    "weakee": "^0.9.1",
-    "lodash.clonedeep": "^3.0.2"
+    "weakee": "^0.9.1"
   },
   "devDependencies": {
     "babel": "^5.8.23",
@@ -34,7 +33,6 @@
   "jspm": {
     "dependencies": {
       "debug": "npm:debug@^2.2.0",
-      "lodash.clonedeep": "npm:lodash.clonedeep@^3.0.2",
       "socket.io-client": "github:socketio/socket.io-client@^1.3.7",
       "weakee": "npm:weakee@^0.9.1"
     },

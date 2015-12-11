@@ -1,7 +1,6 @@
 /* eslint-env browser */
 import socketIO from 'socket.io-client'
 import Emitter from 'weakee'
-import cloneDeep from 'lodash.clonedeep'
 import debug from 'debug'
 const d = debug('jspm-hot-reloader')
 
@@ -9,9 +8,8 @@ function identity (value) {
   return value
 }
 
-class JspmHotReloader extends Emitter {
+class HotReloader extends Emitter {
   constructor (backendUrl, transform = identity) {
-    System.trace = true
     if (!backendUrl) {
       backendUrl = '//' + document.location.host
     }
@@ -36,28 +34,7 @@ class JspmHotReloader extends Emitter {
       console.log('whole page reload requested')
       document.location.reload(true)
     })
-    this.socket.on('change', (ev) => {  // babel doesn't work properly here, need self instead of this
-      let moduleName = transform(ev.path)
-      this.emit('change', moduleName)
-      if (moduleName === 'index.html') {
-        document.location.reload(true)
-      } else {
-        if (self.lastFailedSystemImport) {
-          return self.originalSystemImport.apply(System, self.lastFailedSystemImport).then(() => {
-            d(self.lastFailedSystemImport[0], 'broken module reimported succesfully')
-            self.lastFailedSystemImport = null
-          })
-        }
-        if (this.currentHotReload) {
-          this.currentHotReload = this.currentHotReload.then(() => {
-            // chain promises TODO we can solve this better- this often leads to the same module being reloaded mutliple times
-            return self.hotReload(moduleName)
-          })
-        } else {
-          this.currentHotReload = this.hotReload(moduleName)
-        }
-      }
-    })
+    this.socket.on('change', this.onFileChanged.bind(this))
     window.onerror = (err) => {
       this.socket.emit('error', err)  // emitting errors for jspm-dev-buddy
     }
@@ -65,6 +42,32 @@ class JspmHotReloader extends Emitter {
       d('hot reload disconnected from ', backendUrl)
     })
     this.pushImporters(System.loads)
+  }
+  onFileChanged (ev) {
+    let moduleName = ev.path
+    this.emit('change', moduleName)
+    if (moduleName === 'index.html') {
+      document.location.reload(true)
+    } else {
+      if (this.lastFailedSystemImport) {  // for wehn inital System.import fails
+        return this.originalSystemImport.apply(System, this.lastFailedSystemImport).then(() => {
+          console.log(this.lastFailedSystemImport[0], 'broken module reimported succesfully')
+          this.lastFailedSystemImport = null
+        })
+      }
+      if (this.currentHotReload) {
+        this.currentHotReload = this.currentHotReload.then(() => {
+          // chain promises TODO we can solve this better- this often leads to the same module being reloaded mutliple times
+          return this.hotReload(moduleName)
+        })
+      } else {
+        if (this.failedReimport) {
+          this.reImportRootModules(this.failedReimport, new Date())
+        } else {
+          this.currentHotReload = this.hotReload(moduleName)
+        }
+      }
+    }
   }
   pushImporters (moduleMap, overwriteOlds) {
     Object.keys(moduleMap).forEach((moduleName) => {
@@ -139,10 +142,6 @@ class JspmHotReloader extends Emitter {
   hotReload (moduleName) {
     const self = this
     const start = new Date().getTime()
-    this.backup = { // in case some module fails to import
-      moduleRecords: cloneDeep(System._loader.moduleRecords),
-      loads: cloneDeep(System.loads)
-    }
 
     this.modulesJustDeleted = {}  // TODO use weakmap
     return this.getModuleRecord(moduleName).then(module => {
@@ -180,33 +179,32 @@ class JspmHotReloader extends Emitter {
       if (toReimport.length === 0) {
         toReimport = self.clientImportedModules
       }
-      const promises = toReimport.map((moduleName) => {
-        return this.originalSystemImport.call(System, moduleName).then(moduleReloaded => {
-          console.log('reimported ', moduleName)
-          if (typeof moduleReloaded.__reload === 'function') {
-            const deletedModule = this.modulesJustDeleted[moduleName]
-            if (deletedModule !== undefined) {
-              moduleReloaded.__reload(deletedModule.exports) // calling module reload hook
-            }
-          }
-        })
-      })
-      return Promise.all(promises).then(() => {
-        this.emit('allReimported', toReimport)
-        this.pushImporters(this.modulesJustDeleted, true)
-        this.modulesJustDeleted = {}
-        d('all reimported in ', new Date().getTime() - start, 'ms')
-      }, (err) => {
-        this.emit('error', err)
-        console.error(err)
-        System._loader.moduleRecords = self.backup.moduleRecords
-        System.loads = self.backup.loads
-      })
+      return this.reImportRootModules(toReimport, start)
     }, (err) => {
       this.emit('moduleRecordNotFound', err)
       // not found any module for this file, not really an error
     })
   }
+  reImportRootModules (toReimport, start) {
+    const promises = toReimport.map((moduleName) => {
+      return this.originalSystemImport.call(System, moduleName).then(moduleReloaded => {
+        console.log('reimported ', moduleName)
+      })
+    })
+    return Promise.all(promises).then(() => {
+      this.emit('allReimported', toReimport)
+      this.pushImporters(this.modulesJustDeleted, true)
+      this.modulesJustDeleted = {}
+      this.failedReimport = null
+      this.currentHotReload = null
+      console.log('all reimported in ', new Date().getTime() - start, 'ms')
+    }, (err) => {
+      this.emit('error', err)
+      console.error(err)
+      this.failedReimport = toReimport
+      this.currentHotReload = null
+    })
+  }
 }
 
-export default JspmHotReloader
+export default HotReloader
