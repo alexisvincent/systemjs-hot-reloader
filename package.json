@@ -1,8 +1,8 @@
 {
   "name": "systemjs-hot-reloader",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "JSPM utility for hot reloading modules of your app separately",
-  "main": "jspm-hot-reloader.js",
+  "main": "hot-reloader.js",
   "scripts": {
     "precommit": "npm test",
     "pretest": "node_modules/.bin/standard",
