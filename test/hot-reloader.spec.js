@@ -1,6 +1,6 @@
 /* eslint-env node, mocha */
 /*global System*/
-import HotReloader from '../jspm-hot-reloader'
+import HotReloader from '../hot-reloader'
 import {expect} from 'chai'
 
 describe('jspm-hot-reloader', function () {
