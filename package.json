@@ -25,10 +25,12 @@
   "devDependencies": {
     "babel": "^5.8.23",
     "chai": "^3.3.0",
+    "chokidar-socket-emitter": "^0.3.0",
     "debug": "^2.2.0",
     "husky": "^0.10.1",
     "mocha": "^2.3.3",
-    "standard": "^5.3.1"
+    "standard": "^5.3.1",
+    "systemjs": "^0.19.6"
   },
   "jspm": {
     "dependencies": {
@@ -39,7 +41,16 @@
     "devDependencies": {
       "babel": "npm:babel-core@^5.8.24",
       "babel-runtime": "npm:babel-runtime@^5.8.24",
-      "core-js": "npm:core-js@^1.1.4"
+      "core-js": "npm:core-js@^1.1.4",
+      "react": "npm:react@^0.14.3",
+      "react-dom": "npm:react-dom@^0.14.3",
+      "react-tap-event-plugin": "npm:react-tap-event-plugin@^0.2.1"
     }
+  },
+  "standard": {
+    "ignore": [
+      "config.js",
+      "test/**"
+    ]
   }
 }
