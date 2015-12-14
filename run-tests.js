@@ -7,9 +7,7 @@ const path = require('path')
 var mocha = new Mocha()
 
 var testDir = 'test'
-require('babel/register')({
-  ignore: false
-})
+
 // Add each .js file to the mocha instance
 fs.readdirSync(testDir).filter(function (file) {
   // Only keep the .js files

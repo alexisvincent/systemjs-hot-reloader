@@ -1,12 +1,14 @@
 /* eslint-env node, mocha */
 /*global System*/
-import HotReloader from '../hot-reloader'
-import {expect} from 'chai'
-import System from 'systemjs'
-import '../config'
-import chokidarEvEmitter from 'chokidar-socket-emitter'
+'use strict'
+const chai = require('chai')
+const expect = chai.expect
+const System = require('systemjs')
+require('../config')
+const chokidarEvEmitter = require('chokidar-socket-emitter')
+// const jsdomify = require('jsdomify')
 
-describe('jspm-hot-reloader', function () {
+describe.skip('hot-reloader', function () {
   let hr
   global.document = {
     location: {
@@ -19,11 +21,12 @@ describe('jspm-hot-reloader', function () {
   let testApp
   let chokidarServer
   before(() => {
+
     chokidarServer = chokidarEvEmitter({port: 8090, path: 'test/fixtures-es6-react-project/public/'})
 
-    return System.import('jspm-hot-reloader').then(function (HotReloader) {
+    return System.import('hot-reloader').then(function (HotReloader) {
       console.log(HotReloader.default)
-      hr = new HotReloader.default()
+      hr = new HotReloader.default('http://localhost:8090')
       return System.import('test/fixtures-es6-react-project/public/app').then(function (_testApp_) {
         console.log('ran at ', new Date())
         testApp = _testApp_
@@ -31,14 +34,19 @@ describe('jspm-hot-reloader', function () {
     })
   })
 
-  it.skip('should listen to socket.io and call hotReload on itself, when a change event comes', () => {
-    hr = new HotReloader()
+  it.skip('should listen to socket.io and call hotReload on itself, when a change event comes', (done) => {
+    hr = new HotReloader('http://localhost:8090')
     hr.on('change', (file) => {
       expect(file).to.equal(file)
+      done()
     })
   })
 
-  it('should revert back the tree if some import during hotReload fails', () => {
+  it('should call __reload method on a module, when it reloaded it', function (done) {
+
+  })
+
+  it('should print out an error if reload fails', () => {
 
   })
 
@@ -56,6 +64,7 @@ describe('jspm-hot-reloader', function () {
 
   after((done) => {
     // hr.socket.disconnect()
+
     chokidarServer.close(done)
   })
 })
