@@ -189,6 +189,12 @@ class HotReloader extends Emitter {
     const promises = toReimport.map((moduleName) => {
       return this.originalSystemImport.call(System, moduleName).then(moduleReloaded => {
         console.log('reimported ', moduleName)
+        if (typeof moduleReloaded.__reload === 'function') {
+          const deletedModule = this.modulesJustDeleted[moduleName]
+          if (deletedModule !== undefined) {
+            moduleReloaded.__reload(deletedModule.exports) // calling module reload hook
+          }
+        }
       })
     })
     return Promise.all(promises).then(() => {
