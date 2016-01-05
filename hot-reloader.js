@@ -19,7 +19,10 @@ class HotReloader extends Emitter {
     self.clientImportedModules = []
     System.import = function () {
       const args = arguments
-      self.clientImportedModules.push(args[0])
+      const importedIndex = self.clientImportedModules.push(args[0])
+      if (importedIndex === 1) {
+        self.defaultBodyHTML = document.body.innerHTML
+      }
       return self.originalSystemImport.apply(System, arguments).catch((err) => {
         self.lastFailedSystemImport = args
         throw err
@@ -209,6 +212,7 @@ class HotReloader extends Emitter {
       console.error(err)
       this.failedReimport = toReimport
       this.currentHotReload = null
+      document.body.innerHTML = this.defaultBodyHTML
     })
   }
 }
