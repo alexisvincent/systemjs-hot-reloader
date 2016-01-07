@@ -167,7 +167,7 @@ class HotReloader extends Emitter {
         })
       }
 
-      if (module.importers.length === 0) {
+      if (typeof module.importers == 'undefined' || module.importers.length === 0) {
         toReimport.push(module.name)
       } else {
         let deleted = deleteAllImporters(module)
