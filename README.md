@@ -23,7 +23,7 @@ if (location.origin.match(/localhost/)) {
   })
 }
 ```
-You can drop the if statement, but it is nice and convenient to load reloader only for when on localhost. That way you can go into production without changing anything.
+You can drop the if statement, but it is nice and convenient to load reloader only when on localhost. That way you can go into production without changing anything.
 
 ## Examples
 
