@@ -25,9 +25,9 @@ if (location.origin.match(/localhost/)) {
 ```
 You can drop the if statement, but it is nice and convenient to load reloader only when on localhost. That way you can go into production without changing anything.
 
-## Examples
+## Sample projects
 
-Boilerplate projects set up for hot reloading modules you can fork and use with 3 simple terminal commands(git clone XXX && npm i && npm start):
+Boilerplate set up for hot reloading modules you can fork and use with 3 simple terminal commands(git clone XXX && npm i && npm start):
 - [React](https://github.com/capaj/jspm-react)
 - [Mithril.js](https://github.com/capaj/jspm-mithril)
 - [Angular 2](https://github.com/capaj/jspm-ng2)
@@ -36,10 +36,10 @@ Boilerplate projects set up for hot reloading modules you can fork and use with 
 
 ## Why
 
-We're javascript programmers. We should not need to bundle our apps for development. Many folks dislike JSPM because of how slow it is. JSPM deserves another shot, because it can be faster, more robust and more reliable than any existing alternative. This simple package proves it. Especially for larger codebases, SPAs and such-reliable hot reloadable modules are a crucial development tool. Webpack hot reloading tools are hacky-they might preserve component state, but they sacrifice robustness. Very often a change in a source code doesn't manifestate after webpacks hot reload. This will never happen with module hot reload.
+We're javascript programmers. We should not need to bundle our apps for development. Many folks dislike JSPM because of how slow it is. JSPM deserves another shot, because it can be faster, more robust and more reliable than most alternatives. This simple package proves it. Especially for larger codebases, SPAs and such-reliable hot reloadable modules are a crucial development tool. Webpack hot reloading tools are hacky-they might preserve component state, but they sacrifice robustness. Very often a change in a source code doesn't manifestate after webpacks hot reload. This will never happen with module hot reload.
 
 ## Preserving state
-If you want some state to persist through hot reload, just put it in a module separate from the component. I personally use POJOs with observation, but you are free to use any kind of value store, as long as it sits in separate module from your reloaded component.
+If you want some state to persist through hot reload, just put it in a module separate from the component. I personally use [POJOs with observation](https://github.com/mweststrate/mobservable), but you are free to use any kind of value store, as long as it sits in separate module from your reloaded component.
 
 ## How
 When a change event is emitted on socket.io, we match a module in System._loader.moduleRecords.
