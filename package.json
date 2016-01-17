@@ -45,6 +45,11 @@
       "react": "npm:react@^0.14.3",
       "react-dom": "npm:react-dom@^0.14.3",
       "react-tap-event-plugin": "npm:react-tap-event-plugin@^0.2.1"
+    },
+    "map": {
+      "./default-listen-localhost.js": {
+        "node": "@empty"
+      }
     }
   },
   "standard": {
