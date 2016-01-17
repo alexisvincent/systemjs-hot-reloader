@@ -4,6 +4,9 @@ import Emitter from 'weakee'
 import debug from 'debug'
 const d = debug('jspm-hot-reloader')
 
+if (System.trace !== true)
+  console.warn('System.trace must be set to true via configuration before loading modules to hot-reload.');
+
 function identity (value) {
   return value
 }
