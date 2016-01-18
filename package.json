@@ -1,6 +1,6 @@
 {
   "name": "systemjs-hot-reloader",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "JSPM utility for hot reloading modules of your app separately",
   "main": "hot-reloader.js",
   "scripts": {
@@ -19,17 +19,17 @@
   },
   "homepage": "https://github.com/capaj/systemjs-hot-reloader#readme",
   "dependencies": {
-    "socket.io-client": "^1.3.7",
+    "socket.io-client": "^1.4.4",
     "weakee": "^0.9.1"
   },
   "devDependencies": {
     "babel": "^5.8.23",
     "chai": "^3.3.0",
-    "chokidar-socket-emitter": "^0.3.0",
+    "chokidar-socket-emitter": "^0.4.2",
     "debug": "^2.2.0",
     "husky": "^0.10.1",
     "mocha": "^2.3.3",
-    "standard": "^5.3.1",
+    "standard": "^5.4.1",
     "systemjs": "^0.19.6"
   },
   "jspm": {

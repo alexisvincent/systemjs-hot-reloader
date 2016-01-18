@@ -33,6 +33,10 @@ class HotReloader extends Emitter {
     this.socket.on('connect', () => {
       console.log('hot reload connected to watcher on ', backendUrl)
       this.socket.emit('identification', navigator.userAgent)
+      this.socket.emit('package.json', null, function (pjson) {
+        // self.pjson = pjson // maybe needed in the future?
+        self.jspmConfigFile = pjson.jspm.configFile || 'config.js'
+      })
     })
     this.socket.on('reload', () => {
       console.log('whole page reload requested')
@@ -50,7 +54,7 @@ class HotReloader extends Emitter {
   onFileChanged (ev) {
     let moduleName = ev.path
     this.emit('change', moduleName)
-    if (moduleName === 'index.html') {
+    if (moduleName === 'index.html' || moduleName === this.jspmConfigFile) {
       document.location.reload(true)
     } else {
       if (this.lastFailedSystemImport) {  // for wehn inital System.import fails
