@@ -1,2 +1,2 @@
 import HotReloader from './hot-reloader.js'
-HotReloader('http://localhost:5776')
+new HotReloader('http://localhost:5776')

@@ -48,7 +48,8 @@
     },
     "map": {
       "./default-listener.js": {
-        "node": "@empty"
+        "node": "@empty",
+        "production": "@empty"
       }
     }
   },
