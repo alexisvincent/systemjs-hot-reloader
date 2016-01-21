@@ -56,7 +56,8 @@
   "standard": {
     "ignore": [
       "config.js",
-      "test/**"
+      "test/**",
+      "default-listener.js"
     ]
   }
 }
