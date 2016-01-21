@@ -2,7 +2,7 @@
 import socketIO from 'socket.io-client'
 import Emitter from 'weakee'
 import debug from 'debug'
-const d = debug('jspm-hot-reloader')
+const d = debug('hot-reloader')
 
 if (System.trace !== true) {
   console.warn('System.trace must be set to true via configuration before loading modules to hot-reload.')
@@ -31,7 +31,7 @@ class HotReloader extends Emitter {
     }
     this.socket = socketIO(backendUrl)
     this.socket.on('connect', () => {
-      console.log('hot reload connected to watcher on ', backendUrl)
+      d('hot reload connected to watcher on ', backendUrl)
       this.socket.emit('identification', navigator.userAgent)
       this.socket.emit('package.json', null, function (pjson) {
         // self.pjson = pjson // maybe needed in the future?
@@ -39,7 +39,7 @@ class HotReloader extends Emitter {
       })
     })
     this.socket.on('reload', () => {
-      console.log('whole page reload requested')
+      d('whole page reload requested')
       document.location.reload(true)
     })
     this.socket.on('change', this.onFileChanged.bind(this))
@@ -59,7 +59,7 @@ class HotReloader extends Emitter {
     } else {
       if (this.lastFailedSystemImport) {  // for wehn inital System.import fails
         return this.originalSystemImport.apply(System, this.lastFailedSystemImport).then(() => {
-          console.log(this.lastFailedSystemImport[0], 'broken module reimported succesfully')
+          d(this.lastFailedSystemImport[0], 'broken module reimported succesfully')
           this.lastFailedSystemImport = null
         })
       }
@@ -114,7 +114,7 @@ class HotReloader extends Emitter {
         // this is a module from System.loads
         exportedValue = System.get(name)
         if (!exportedValue) {
-          d(`missing exported value on ${name}, reloading whole page because module record is broken`)
+          console.warning(`missing exported value on ${name}, reloading whole page because module record is broken`)
           return document.location.reload(true)
         }
       } else {
@@ -196,7 +196,7 @@ class HotReloader extends Emitter {
   reImportRootModules (toReimport, start) {
     const promises = toReimport.map((moduleName) => {
       return this.originalSystemImport.call(System, moduleName).then(moduleReloaded => {
-        console.log('reimported ', moduleName)
+        d('reimported ', moduleName)
         if (typeof moduleReloaded.__reload === 'function') {
           const deletedModule = this.modulesJustDeleted[moduleName]
           if (deletedModule !== undefined) {
@@ -211,7 +211,7 @@ class HotReloader extends Emitter {
       this.modulesJustDeleted = {}
       this.failedReimport = null
       this.currentHotReload = null
-      console.log('all reimported in ', new Date().getTime() - start, 'ms')
+      d('all reimported in ', new Date().getTime() - start, 'ms')
     }, (err) => {
       this.emit('error', err)
       console.error(err)
