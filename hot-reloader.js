@@ -19,6 +19,7 @@ class HotReloader extends Emitter {
     }
     super()
     this.originalSystemImport = System.import
+    this.transform = transform
     const self = this
     self.clientImportedModules = []
     System.import = function () {
@@ -52,7 +53,7 @@ class HotReloader extends Emitter {
     this.pushImporters(System.loads)
   }
   onFileChanged (ev) {
-    let moduleName = ev.path
+    let moduleName = this.transform(ev.path)
     this.emit('change', moduleName)
     if (moduleName === 'index.html' || moduleName === this.jspmConfigFile) {
       document.location.reload(true)
