@@ -202,7 +202,6 @@ class HotReloader extends Emitter {
       const deletedModule = this.modulesJustDeleted[moduleName]
       if (deletedModule !== undefined) {
         d('mocking prevInstance module');
-        System.delete(System.normalizeSync(prevInstancePath));
         d('deletedModule.exports: ', deletedModule.exports);
         System.set(prevInstancePath, System.newModule(deletedModule.exports));
       }
