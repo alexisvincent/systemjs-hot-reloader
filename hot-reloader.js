@@ -4,7 +4,7 @@ import Emitter from 'weakee'
 import debug from 'debug'
 const d = debug('hot-reloader')
 
-var prevInstancePath = System.normalizeSync('capaj/systemjs-hot-reloader/prevInstance.js');
+const prevInstancePath = System.normalizeSync('capaj/systemjs-hot-reloader/prevInstance.js');
 d('prevInstancePath: ',prevInstancePath)
 
 if (System.trace !== true) {
