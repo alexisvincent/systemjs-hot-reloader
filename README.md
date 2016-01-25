@@ -25,6 +25,12 @@ if (location.origin.match(/localhost/)) {
 ```
 You can drop the if statement, but it is nice and convenient to load reloader only when on localhost. That way you can go into production without changing anything.
 
+If your url is http://localhost:5776 for your event emitter you can use the easiest option innside your es6 code:
+```javascript
+import 'systemjs-hot-reloader/default-listener.js';
+```
+This one maps to empty module on production builds, so no needs for any if statements. 
+
 ## Sample projects
 
 Boilerplate set up for hot reloading modules you can fork and use with 3 simple terminal commands(git clone XXX && npm i && npm start):
