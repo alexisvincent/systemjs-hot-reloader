@@ -4,6 +4,9 @@ import Emitter from 'weakee'
 import debug from 'debug'
 const d = debug('hot-reloader')
 
+const prevInstancePath = System.normalizeSync('capaj/systemjs-hot-reloader/prevInstance.js')
+d('prevInstancePath: ', prevInstancePath)
+
 if (System.trace !== true) {
   console.warn('System.trace must be set to true via configuration before loading modules to hot-reload.')
 }
@@ -196,10 +199,16 @@ class HotReloader extends Emitter {
   }
   reImportRootModules (toReimport, start) {
     const promises = toReimport.map((moduleName) => {
+      const deletedModule = this.modulesJustDeleted[moduleName]
+      if (deletedModule !== undefined) {
+        d('mocking prevInstance module')
+        System.delete(System.normalizeSync(prevInstancePath))
+        d('deletedModule.exports: ', deletedModule.exports)
+        System.set(prevInstancePath, System.newModule(deletedModule.exports))
+      }
       return this.originalSystemImport.call(System, moduleName).then(moduleReloaded => {
         d('reimported ', moduleName)
         if (typeof moduleReloaded.__reload === 'function') {
-          const deletedModule = this.modulesJustDeleted[moduleName]
           if (deletedModule !== undefined) {
             moduleReloaded.__reload(deletedModule.exports) // calling module reload hook
           }
@@ -212,6 +221,7 @@ class HotReloader extends Emitter {
       this.modulesJustDeleted = {}
       this.failedReimport = null
       this.currentHotReload = null
+      System.delete(System.normalizeSync(prevInstancePath))
       d('all reimported in ', new Date().getTime() - start, 'ms')
     }, (err) => {
       this.emit('error', err)
