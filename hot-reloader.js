@@ -115,7 +115,7 @@ class HotReloader extends Emitter {
         // this is a module from System.loads
         exportedValue = System.get(name)
         if (!exportedValue) {
-          console.warning(`missing exported value on ${name}, reloading whole page because module record is broken`)
+          console.warn(`missing exported value on ${name}, reloading whole page because module record is broken`)
           return document.location.reload(true)
         }
       } else {
