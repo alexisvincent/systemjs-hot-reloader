@@ -130,8 +130,8 @@ class HotReloader extends Emitter {
     }
   }
   getModuleRecord (moduleName) {
-      return System.normalize(moduleName).then(normalizedName => {
-          let aModule = System._loader.moduleRecords[normalizedName]
+    return System.normalize(moduleName).then(normalizedName => {
+      let aModule = System._loader.moduleRecords[normalizedName]
       if (!aModule) {
         aModule = System.loads[normalizedName]
         if (aModule) {
@@ -152,31 +152,29 @@ class HotReloader extends Emitter {
     const self = this
     const start = new Date().getTime()
 
-    if (moduleName.endsWith(".html")) {
-        d('moduleName: ' + moduleName)
-        let moduleImportName = System.normalizeSync(moduleName + '!text');
-        d('importName: ' + moduleImportName);
-        
-        let module = System.loads[moduleImportName];
-        if(module && module.importers && module.importers.length) {
-            let parentModuleName = System.loads[moduleImportName].importers[0].name;
-            d('parentModuleName: ' + parentModuleName);
-            
-            if (System.delete(moduleImportName)) {
-                return System.import(moduleImportName)
-                .then(() => {         
-                    d('hotreloading parent: ' + parentModuleName);
-                    return this.hotReload(parentModuleName);                    
-                });
-            }
-            else {
-                d('failed to delete module');
-                return undefined;
-            }
+    if (moduleName.endsWith('.html')) {
+      d('moduleName: ' + moduleName)
+      let moduleImportName = System.normalizeSync(moduleName + '!text')
+      d('importName: ' + moduleImportName)
+
+      let module = System.loads[moduleImportName]
+      if (module && module.importers && module.importers.length) {
+        let parentModuleName = System.loads[moduleImportName].importers[0].name
+        d('parentModuleName: ' + parentModuleName)
+
+        if (System.delete(moduleImportName)) {
+          return System.import(moduleImportName)
+            .then(() => {
+              d('hotreloading parent: ' + parentModuleName)
+              return this.hotReload(parentModuleName)
+            })
+        } else {
+          d('failed to delete module')
+          return undefined
         }
-        else {
-            return undefined;
-        }
+      } else {
+        return undefined
+      }
     }
 
     this.modulesJustDeleted = {}  // TODO use weakmap
