@@ -153,27 +153,22 @@ class HotReloader extends Emitter {
     const start = new Date().getTime()
 
     if (moduleName.endsWith('.html')) {
-      d('moduleName: ' + moduleName)
       let moduleImportName = System.normalizeSync(moduleName + '!text')
-      d('importName: ' + moduleImportName)
-
       let module = System.loads[moduleImportName]
+      let parentModuleName
       if (module && module.importers && module.importers.length) {
-        let parentModuleName = System.loads[moduleImportName].importers[0].name
-        d('parentModuleName: ' + parentModuleName)
-
-        if (System.delete(moduleImportName)) {
-          return System.import(moduleImportName)
-            .then(() => {
-              d('hotreloading parent: ' + parentModuleName)
+        parentModuleName = System.loads[moduleImportName].importers[0].name
+      }
+      if (System.delete(moduleImportName)) {
+        return System.import(moduleImportName)
+          .then(() => {
+            if (parentModuleName) {
               return this.hotReload(parentModuleName)
-            })
-        } else {
-          d('failed to delete module')
-          return undefined
-        }
+            }
+          })
       } else {
-        return undefined
+        d('failed to delete module')
+        return
       }
     }
 
