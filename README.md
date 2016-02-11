@@ -70,7 +70,7 @@ This is also needed for some React components, like the Redux Provider and React
 ``` javascript
 export function __unload() {
   // force unload React components
-  ReactDOM.unmountComponentAtNode(container);
+  ReactDOM.unmountComponentAtNode(DOMNode);	// your container node
 }
 ```
 
