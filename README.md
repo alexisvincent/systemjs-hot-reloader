@@ -65,6 +65,14 @@ export function __unload(){
 ```
 This is needed for example for [Angular](https://github.com/capaj/NG6-starter/blob/eb988ef00685390618b5dad57635ce80c6d52680/client/app/app.js#L42), which needs clean DOM every time it bootstraps.
 
+This is also needed for some React components, like the Redux Provider and React Router. A crude way to force reloading of React components: 
+``` javascript
+export function __unload() {
+  // force unload React components
+  ReactDOM.unmountComponentAtNode(container);
+}
+```
+
 ## Credit
 Most of the credit for this awesome engineering feat should go to [Guy Bedford](https://github.com/guybedford). He paved me a way, I simply followed it.
 
