@@ -7,7 +7,7 @@ and reloads your ES6 modules as you change them. Similar to browserify hot modul
 
 ## Install
 ```
-jspm i github:capaj/systemjs-hot-reloader
+jspm i --dev systemjs-hot-reloader
 ```
 
 ## Usage
