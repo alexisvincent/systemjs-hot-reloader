@@ -11,11 +11,12 @@ jspm i github:capaj/systemjs-hot-reloader
 ```
 
 ## Usage
+Recommended usage with JSPM 0.17.0 and up is described here by [@guybedford](https://github.com/guybedford/) himself: http://jspm.io/0.17-beta-guide/hot-reloading.html
 
+If using 0.16.x, read the rest here: 
 Place the following JavaScript into `index.html`, __before__ you import your application files. When `jspm-hot-reloader` is imported, it requires that you set `System.trace = true` before first System.import.
 
 ```javascript
-
 if (location.origin.match(/localhost/)) { 
   System.trace = true
   System.import('capaj/systemjs-hot-reloader').then(function(HotReloader){
@@ -42,7 +43,7 @@ Boilerplate set up for hot reloading modules you can fork and use with 3 simple 
 
 ## Why
 
-We're javascript programmers. We should not need to bundle our apps for development. Many folks dislike JSPM because of how slow it is. JSPM deserves another shot, because it can be faster, more robust and more reliable than most alternatives. This simple package proves it. Especially for larger codebases, SPAs and such-reliable hot reloadable modules are a crucial development tool. Webpack hot reloading tools are hacky-they might preserve component state, but they sacrifice robustness. Very often a change in a source code doesn't manifestate after webpacks hot reload. This will never happen with module hot reload.
+We're javascript programmers. We should not need to bundle our apps for development. Many folks dislike JSPM because of how slow it is. JSPM deserves another shot, because it can be faster, more robust and more reliable than most alternatives. This simple package proves it. Especially for larger codebases, SPAs and such-reliable hot reloadable modules are a necessray for meaningful feedback loop. Webpack hot reloading tools are hacky-very often a change in a source code doesn't manifestate after webpacks hot reload. This will never happen with module hot reload, because we're properly rerunning depency tree.
 
 ## Preserving state
 If you want some state to persist through hot reload, just put it in a module separate from the component. I personally use [POJOs with observation](https://github.com/mweststrate/mobservable), but you are free to use any kind of value store, as long as it sits in separate module from your reloaded component.
