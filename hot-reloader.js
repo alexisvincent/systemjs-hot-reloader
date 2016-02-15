@@ -215,7 +215,7 @@ class HotReloader extends Emitter {
       d('all reimported in ', new Date().getTime() - start, 'ms')
     }, (err) => {
       this.emit('error', err)
-      console.error(err)
+      console.error('Module "' + toReimport + '" reimport failed because this error was thrown: ', err)
       this.failedReimport = toReimport
       this.currentHotReload = null
     })
