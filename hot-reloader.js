@@ -152,6 +152,26 @@ class HotReloader extends Emitter {
     const self = this
     const start = new Date().getTime()
 
+    if (moduleName.endsWith('.html')) {
+      let moduleImportName = System.normalizeSync(moduleName + '!text')
+      let module = System.loads[moduleImportName]
+      let parentModuleName
+      if (module && module.importers && module.importers.length) {
+        parentModuleName = System.loads[moduleImportName].importers[0].name
+      }
+      if (System.delete(moduleImportName)) {
+        return System.import(moduleImportName)
+          .then(() => {
+            if (parentModuleName) {
+              return this.hotReload(parentModuleName)
+            }
+          })
+      } else {
+        d('failed to delete module')
+        return
+      }
+    }
+
     this.modulesJustDeleted = {}  // TODO use weakmap
     return this.getModuleRecord(moduleName).then(module => {
       this.deleteModule(module, 'origin')
