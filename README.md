@@ -1,5 +1,5 @@
 # systemjs-hot-reloader
-connects to an event source such as:
+connects via socket.io to an event source such as:
 - [chokidar-socket-emitter](https://github.com/capaj/chokidar-socket-emitter) 
 - atom plugin [jspm-dev-buddy](https://atom.io/packages/jspm-dev-buddy)
 
