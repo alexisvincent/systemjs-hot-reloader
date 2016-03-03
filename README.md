@@ -11,11 +11,23 @@ jspm i --dev systemjs-hot-reloader
 ```
 
 ## Usage
-Recommended usage with JSPM 0.17.0 and up is described here by [@guybedford](https://github.com/guybedford/) himself: http://jspm.io/0.17-beta-guide/hot-reloading.html
-
-If using 0.16.x, read the rest here: 
-Place the following JavaScript into `index.html`, __before__ you import your application files. When `jspm-hot-reloader` is imported, it requires that you set `System.trace = true` before first System.import.
-
+### JSPM 0.17.x
+Described by [@guybedford](https://github.com/guybedford/) himself:  
+http://jspm.io/0.17-beta-guide/hot-reloading.html
+### JSPM 0.16.x
+#### Connect to default event emitter  port
+Use when your event emitter is available at http://localhost:5776 (the default). Include in your `index.html`:
+```javascript
+System.trace = true
+System.import('./app.js')
+```
+At the top of your es6 code:
+```javascript
+import 'systemjs-hot-reloader/default-listener.js'
+```
+Maps to empty module on production builds, so no needs for any if statements. 
+#### Connect to custom event emitter port
+Include in your `index.html`:
 ```javascript
 if (location.origin.match(/localhost/)) { 
   System.trace = true
@@ -23,14 +35,9 @@ if (location.origin.match(/localhost/)) {
     new HotReloader.default('http://localhost:8090')  // chokidar-socket-emitter port
   })
 }
+System.import('./app.js')
 ```
 You can drop the if statement, but it is nice and convenient to load reloader only when on localhost. That way you can go into production without changing anything.
-
-If your url is http://localhost:5776 for your event emitter you can use the easiest option inside your es6 code:
-```javascript
-import 'systemjs-hot-reloader/default-listener.js';
-```
-This one maps to empty module on production builds, so no needs for any if statements. 
 
 ## Sample projects
 
