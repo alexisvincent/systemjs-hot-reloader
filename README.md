@@ -47,7 +47,7 @@ We're javascript programmers. We should not need to bundle our apps for developm
 
 ## Preserving state
 If you want some state to persist through hot reload, just put it in a module separate from the component. I personally use [POJOs with observation](https://github.com/mweststrate/mobservable), but you are free to use any kind of value store, as long as it sits in separate module from your reloaded component.
-Another way to do this is by adding a [simple getHotReloadStore utility](https://gist.github.com/peteruithoven/b43a6d2cd6c3d2c1a923).
+Another way to do this is by adding a [simple systemjs-hot-reloader-store utility](https://github.com/peteruithoven/systemjs-hot-reloader-store).
 
 ## How
 When a change event is emitted on socket.io, we match a module in System._loader.moduleRecords.
