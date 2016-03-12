@@ -50,7 +50,7 @@ Boilerplate set up for hot reloading modules you can fork and use with 3 simple 
 
 ## Why
 
-We're javascript programmers. We should not need to bundle our apps for development. Many folks dislike JSPM because of how slow it is. JSPM deserves another shot, because it can be faster, more robust and more reliable than most alternatives. This simple package proves it. Especially for larger codebases, SPAs and such-reliable hot reloadable modules are a necessray for meaningful feedback loop. Webpack hot reloading tools are hacky-very often a change in a source code doesn't manifestate after webpacks hot reload. This will never happen with module hot reload, because we're properly rerunning depency tree.
+We're javascript programmers. We should not need to bundle our apps for development. Many folks dislike JSPM because of how slow it is. JSPM deserves another shot, because it can be faster, more robust and more reliable than most alternatives. This simple package proves it. Especially for larger codebases, SPAs and such-reliable hot reloadable modules are a necessray for meaningful feedback loop. React-transform is hacky-very often a change in a source code doesn't manifestate after a reload. Even [Dan Abramov admitted himself](https://medium.com/@dan_abramov/hot-reloading-in-react-1140438583bf#.6gk8gzb72) reloading whole modules and rerendering is the way to go. This is the way it is implemented in systemjs-hot-reloader too.
 
 ## Preserving state
 If you want some state to persist through hot reload, just put it in a module separate from the component. I personally use [POJOs with observation](https://github.com/mweststrate/mobservable), but you are free to use any kind of value store, as long as it sits in separate module from your reloaded component.
