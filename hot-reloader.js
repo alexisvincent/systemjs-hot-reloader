@@ -166,9 +166,20 @@ class HotReloader extends Emitter {
               return this.hotReload(parentModuleName)
             }
           })
-      } else {
-        d('failed to delete module')
-        return
+      } else { // If .html file is not loaded as module
+        // Try to find and hot-reload Angular2 modules from components templateUrl file.
+        // We assume that component and templateUrl file names are the same(without filename extension).
+        // eg. app.component[.ts] == app.component[.html]
+        // Note: System.normalizeSync(moduleName) returns ".../app.component.html.ts" and this
+        //       code replaces ".html" portion. May not cover overriden normalize hook.
+        let possibleModuleNameForTemplateUrl = System.normalizeSync(moduleName).replace('.html', '')
+
+        if (System.delete(possibleModuleNameForTemplateUrl)) {
+          return System.import(possibleModuleNameForTemplateUrl)
+        } else {
+          d('failed to delete module')
+          return
+        }
       }
     }
 
