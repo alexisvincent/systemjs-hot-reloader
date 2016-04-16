@@ -234,6 +234,10 @@ class HotReloader extends Emitter {
       this.currentHotReload = null
       d('all reimported in ', new Date().getTime() - start, 'ms')
     }, (err) => {
+      Object.keys(this.modulesJustDeleted).forEach((modName) => {
+        d('deleting on failed reimport: ', modName) // failed import of a module leaves something in the SystemJS module cache, even though it is not visible in System._loader.moduleRecords we need to delete the module to revert to clean state
+        System.delete(modName)
+      })
       this.emit('error', err)
       console.error('Module "' + toReimport + '" reimport failed because this error was thrown: ', err)
       this.failedReimport = toReimport
