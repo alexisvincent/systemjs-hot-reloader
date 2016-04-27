@@ -152,7 +152,7 @@ class HotReloader extends Emitter {
     const self = this
     const start = new Date().getTime()
 
-    if (moduleName.endsWith('.html')) {
+    if (/\.html$/.test(moduleName)) {
       let moduleImportName = System.normalizeSync(moduleName + '!text')
       let module = System.loads[moduleImportName]
       let parentModuleName
