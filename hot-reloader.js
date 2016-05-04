@@ -156,19 +156,21 @@ class HotReloader extends Emitter {
       let moduleImportName = System.normalizeSync(moduleName + '!text')
       let module = System.loads[moduleImportName]
       let parentModuleName
-      if (module && module.importers && module.importers.length) {
-        parentModuleName = System.loads[moduleImportName].importers[0].name
-      }
-      if (System.delete(moduleImportName)) {
-        return System.import(moduleImportName)
-          .then(() => {
-            if (parentModuleName) {
-              return this.hotReload(parentModuleName)
-            }
-          })
-      } else {
-        d('failed to delete module')
-        return
+      if (!module || !module.metadata || module.metadata.format !== 'esm') { // html special case breaks esm loading so skip this if esm
+        if (module && module.importers && module.importers.length) {
+          parentModuleName = System.loads[moduleImportName].importers[0].name
+        }
+        if (System.delete(moduleImportName)) {
+          return System.import(moduleImportName)
+            .then(() => {
+              if (parentModuleName) {
+                return this.hotReload(parentModuleName)
+              }
+            })
+        } else {
+          d('failed to delete module')
+          return
+        }
       }
     }
 
