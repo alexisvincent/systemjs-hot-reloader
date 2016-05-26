@@ -169,8 +169,16 @@ class HotReloader extends Emitter {
             }
           })
       } else {
-        d('failed to delete module')
-        return
+        let templatesModuleName = System.normalizeSync(moduleName).replace('.html', '')
+        let templatesModule = System.loads[templatesModuleName]
+        if (templatesModule) {
+          let extension = templatesModuleName.substring(templatesModuleName.lastIndexOf('.'))
+          moduleName = moduleName.replace('.html', extension)
+          // continue hotReload with found moduleName
+        } else {
+          d('failed to delete module')
+          return
+        }
       }
     }
 
