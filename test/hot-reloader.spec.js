@@ -12,7 +12,8 @@ describe.skip('hot-reloader', function () {
   let hr
   global.document = {
     location: {
-      host: 'localhost:8080'
+      host: 'localhost:8080',
+      protocol: 'http:'
     }
   }
   global.navigator = {

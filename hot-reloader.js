@@ -137,13 +137,15 @@ class HotReloader extends Emitter {
         if (aModule) {
           return aModule
         }
-        return System.normalize(moduleName + '!').then(normalizedName => {  // .jsx! for example are stored like this
-          let aModule = System._loader.moduleRecords[normalizedName]
-          if (aModule) {
-            return aModule
-          }
-          throw new Error('module was not found in Systemjs moduleRecords')
+        const fullModulePath = location.origin + '/' + moduleName
+        const loadsKey = Object.keys(System.loads).find((n) => {
+          return n.indexOf(fullModulePath) !== -1
         })
+        // normalize does not yield a key which would match the key used in System.loads, so we have to improvise a bit
+        if (loadsKey) {
+          return System.loads[loadsKey]
+        }
+        throw new Error('module was not found in Systemjs moduleRecords')
       }
       return aModule
     })
