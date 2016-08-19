@@ -58,7 +58,7 @@ class HotReloader extends Emitter {
     if (moduleName === 'index.html' || moduleName === this.jspmConfigFile) {
       document.location.reload(true)
     } else {
-      if (this.lastFailedSystemImport) {  // for wehn inital System.import fails
+      if (this.lastFailedSystemImport) {  // for when inital System.import fails
         return this.originalSystemImport.apply(System, this.lastFailedSystemImport).then(() => {
           d(this.lastFailedSystemImport[0], 'broken module reimported succesfully')
           this.lastFailedSystemImport = null
