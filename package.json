@@ -5,7 +5,7 @@
   "main": "hot-reloader.js",
   "scripts": {
     "precommit": "npm test",
-    "pretest": "node_modules/.bin/standard",
+    "pretest": "standard",
     "test": "node run-tests"
   },
   "repository": {
