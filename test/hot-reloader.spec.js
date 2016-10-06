@@ -5,8 +5,78 @@ const chai = require('chai')
 const expect = chai.expect
 const System = require('systemjs')
 require('../config')
+
+// mock jspm modules
+System.set(
+  System.normalizeSync('weakee'),
+  System.newModule({default: require('events')}))
+
+System.set(
+  System.normalizeSync('debug'),
+   System.newModule({__useDefault: true, default: () => () => null}))
+
 const chokidarEvEmitter = require('chokidar-socket-emitter')
+const sinon = require('sinon')
+const sinonChai = require('sinon-chai')
+const Emitter = require('events')
+chai.use(sinonChai)
 // const jsdomify = require('jsdomify')
+
+describe('hot-reloader unit tests', () => {
+  let HotReloaderFactoryModule, HotReloaderFactory, SimpleHotReloader
+  before((done) => {
+    System.trace = true
+    return Promise.all([
+      System.import('factory')
+    ])
+      .then(mods => {
+        HotReloaderFactoryModule = mods[0]
+        HotReloaderFactory = mods[0].HotReloaderFactory
+        SimpleHotReloader = mods[0].SimpleHotReloader
+      })
+      .then(done, done)
+  })
+
+  let emitter
+  const originalSystemImport = System.import
+  beforeEach(() => {
+    emitter = new Emitter()
+  })
+
+  afterEach(() => {
+    System.import = originalSystemImport
+  })
+
+  it('should create a hotReloader instance', () => {
+    const hotReloader = new SimpleHotReloader('test', undefined, emitter)
+    expect(hotReloader.transform).to.equal(HotReloaderFactoryModule.identity)
+    expect(hotReloader.clientImportedModules).to.eql([])
+  })
+
+  it('should do a whole page reload if requested', () => {
+    const spy = sinon.spy()
+    const HotReloader = HotReloaderFactory({
+      globals: {
+        document: {
+          location: {
+            reload: spy
+          }
+        }
+      }
+    })
+    const hotReloader = new HotReloader('test', undefined, emitter)
+    emitter.emit('reload')
+    expect(spy).to.have.been.calledWith(true)
+  })
+
+  it('should call onFileChanged on change event', () => {
+    const hotReloader = new SimpleHotReloader('test', undefined, emitter)
+    hotReloader.onFileChanged = sinon.spy()
+    const arg = {}
+    emitter.emit('change', arg)
+    expect(hotReloader.onFileChanged).to.have.been.calledWith(arg)
+  })
+})
 
 describe.skip('hot-reloader', function () {
   let hr
@@ -23,7 +93,7 @@ describe.skip('hot-reloader', function () {
   let chokidarServer
   before(() => {
 
-    chokidarServer = chokidarEvEmitter({port: 8090, path: 'test/fixtures-es6-react-project/public/'})
+    chokidarServer = chokidarEvEmitter({ port: 8090, path: 'test/fixtures-es6-react-project/public/' })
 
     return System.import('hot-reloader').then(function (HotReloader) {
       console.log(HotReloader.default)

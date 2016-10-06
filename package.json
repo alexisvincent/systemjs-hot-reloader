@@ -19,8 +19,7 @@
   },
   "homepage": "https://github.com/capaj/systemjs-hot-reloader#readme",
   "dependencies": {
-    "socket.io-client": "^1.4.5",
-    "weakee": "^1.0.0"
+    "socket.io-client": "^1.4.5"
   },
   "devDependencies": {
     "babel": "^5.8.23",
@@ -29,14 +28,22 @@
     "debug": "^2.2.0",
     "husky": "^0.10.1",
     "mocha": "^2.4.5",
+    "sinon": "^1.17.6",
+    "sinon-chai": "^2.8.0",
     "standard": "^5.4.1",
     "systemjs": "^0.19.25"
   },
   "jspm": {
+    "map": {
+      "./default-listener.js": {
+        "node": "@empty",
+        "production": "@empty"
+      }
+    },
     "dependencies": {
       "debug": "npm:debug@^2.2.0",
       "socket.io-client": "github:socketio/socket.io-client@^1.4.4",
-      "weakee": "npm:weakee@^1.0.0"
+      "weakee": "npm:weakee@^0.9.1"
     },
     "devDependencies": {
       "babel": "npm:babel-core@^5.8.24",
@@ -45,12 +52,6 @@
       "react": "npm:react@^0.14.3",
       "react-dom": "npm:react-dom@^0.14.3",
       "react-tap-event-plugin": "npm:react-tap-event-plugin@^0.2.1"
-    },
-    "map": {
-      "./default-listener.js": {
-        "node": "@empty",
-        "production": "@empty"
-      }
     }
   },
   "standard": {
