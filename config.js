@@ -23,6 +23,7 @@ System.config({
     "react-router": "npm:react-router@1.0.0",
     "react-tap-event-plugin": "npm:react-tap-event-plugin@0.2.1",
     "socket.io-client": "github:socketio/socket.io-client@1.3.7",
+    "systemjs-hmr": "npm:systemjs-hmr@0.0.2",
     "weakee": "npm:weakee@0.9.1",
     "github:jspm/nodelibs-assert@0.1.0": {
       "assert": "npm:assert@1.3.0"
@@ -106,6 +107,7 @@ System.config({
       "vm": "github:jspm/nodelibs-vm@0.1.0"
     },
     "npm:assert@1.3.0": {
+      "systemjs-json": "github:systemjs/plugin-json@0.1.0",
       "util": "npm:util@0.10.3"
     },
     "npm:babel-runtime@5.8.34": {
@@ -456,7 +458,8 @@ System.config({
     },
     "npm:util@0.10.3": {
       "inherits": "npm:inherits@2.0.1",
-      "process": "github:jspm/nodelibs-process@0.1.2"
+      "process": "github:jspm/nodelibs-process@0.1.2",
+      "systemjs-json": "github:systemjs/plugin-json@0.1.0"
     },
     "npm:vm-browserify@0.0.4": {
       "indexof": "npm:indexof@0.0.1"
