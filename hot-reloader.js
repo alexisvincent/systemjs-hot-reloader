@@ -182,7 +182,7 @@ class HotReloader extends Emitter {
         toReimport.push(module.name)
       } else {
         let deleted = deleteAllImporters(module)
-        if (deleted.find((res) => res === false) !== undefined) {
+        if (deleted.find && deleted.find((res) => res === false) !== undefined) {
           toReimport.push(module.name)
         }
       }
