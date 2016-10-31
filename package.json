@@ -3,6 +3,7 @@
   "version": "0.6.0",
   "description": "JSPM utility for hot reloading modules of your app separately",
   "main": "hot-reloader.js",
+  "jspmNodeConversion": false,
   "scripts": {
     "precommit": "npm test",
     "pretest": "standard",
