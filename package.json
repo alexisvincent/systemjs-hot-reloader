@@ -3,9 +3,10 @@
   "version": "0.6.0",
   "description": "JSPM utility for hot reloading modules of your app separately",
   "main": "hot-reloader.js",
+  "jspmNodeConversion": false,
   "scripts": {
     "precommit": "npm test",
-    "pretest": "node_modules/.bin/standard",
+    "pretest": "standard",
     "test": "node run-tests"
   },
   "repository": {
@@ -33,9 +34,16 @@
     "systemjs": "^0.19.25"
   },
   "jspm": {
+    "map": {
+      "./default-listener.js": {
+        "node": "@empty",
+        "production": "@empty"
+      }
+    },
     "dependencies": {
       "debug": "npm:debug@^2.2.0",
       "socket.io-client": "github:socketio/socket.io-client@^1.4.4",
+      "systemjs-hmr": "npm:systemjs-hmr@^0.0.3",
       "weakee": "npm:weakee@^1.0.0"
     },
     "devDependencies": {
@@ -45,12 +53,6 @@
       "react": "npm:react@^0.14.3",
       "react-dom": "npm:react-dom@^0.14.3",
       "react-tap-event-plugin": "npm:react-tap-event-plugin@^0.2.1"
-    },
-    "map": {
-      "./default-listener.js": {
-        "node": "@empty",
-        "production": "@empty"
-      }
     }
   },
   "standard": {

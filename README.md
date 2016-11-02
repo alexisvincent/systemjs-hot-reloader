@@ -43,6 +43,7 @@ You can drop the if statement, but it is nice and convenient to load reloader on
 
 Boilerplate set up for hot reloading modules you can fork and use with 3 simple terminal commands(git clone XXX && npm i && npm start):
 - [React](https://github.com/capaj/jspm-react)
+- [Inferno](https://github.com/capaj/jspm-inferno)
 - [Mithril.js](https://github.com/capaj/jspm-mithril)
 - [Angular 2](https://github.com/capaj/jspm-ng2)
 - [Angular - NG6-starter](https://github.com/capaj/NG6-starter)
