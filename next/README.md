@@ -42,7 +42,7 @@ System.import('app/app.js')
 ## State Hydration and Module Unloading
 As described [here](https://github.com/alexisvincent/systemjs-hmr#state-hydration-and-safe-unloads), state hydration is handled in the following way.
 
-```
+```javascript
 // You can import the previous module instance from '@hot'
 // During the first load, module == false
 import { module } from '@hot'
