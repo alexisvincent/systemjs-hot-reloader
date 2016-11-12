@@ -5,6 +5,10 @@ connects via socket.io to an event source such as:
 
 and reloads your ES6 modules as you change them. Similar to browserify hot module replacement, but running in your browser.
 
+## Future Plans
+systemjs-hmr has been refractored to function as an extension of [alexisvincent/systemjs-hmr](https://github.com/alexisvincent/systemjs-hmr).
+This will introduce breaking changes into systemjs-hot-reloader in the future, but the old mechanism will likely receive bug fixes. If you want to start playing/testing the new approach, have a look [here](./next/README.md)
+
 ## Install
 ```
 jspm i --dev systemjs-hot-reloader
