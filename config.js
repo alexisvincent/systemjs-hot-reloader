@@ -23,7 +23,7 @@ System.config({
     "react-router": "npm:react-router@1.0.0",
     "react-tap-event-plugin": "npm:react-tap-event-plugin@0.2.1",
     "socket.io-client": "github:socketio/socket.io-client@1.3.7",
-    "systemjs-hmr": "npm:systemjs-hmr@0.0.3",
+    "systemjs-hmr": "npm:systemjs-hmr@0.1.0",
     "weakee": "npm:weakee@0.9.1",
     "github:jspm/nodelibs-assert@0.1.0": {
       "assert": "npm:assert@1.3.0"

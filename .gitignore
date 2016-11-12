@@ -1,3 +1,6 @@
+.idea
+systemjs-hot-reloader.iml
+
 # Logs
 logs
 *.log
