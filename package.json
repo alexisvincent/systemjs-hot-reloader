@@ -21,6 +21,7 @@
   "homepage": "https://github.com/capaj/systemjs-hot-reloader#readme",
   "dependencies": {
     "socket.io-client": "^1.4.5",
+    "systemjs-hmr": "^0.1.0",
     "weakee": "^1.0.0"
   },
   "devDependencies": {
