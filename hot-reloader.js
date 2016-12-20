@@ -56,3 +56,4 @@ class HotReloader extends Emitter {
 }
 
 export default HotReloader
+export {setDebugLogging} from 'systemjs-hmr'

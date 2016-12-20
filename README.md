@@ -43,6 +43,14 @@ System.import('./app.js')
 ```
 You can drop the if statement, but it is nice and convenient to load reloader only when on localhost. That way you can go into production without changing anything.
 
+#### Debugging
+By default, systemjs-hot-reloader logs to the console what it's doing when hot reloading a module. If you want to disable logging, try the following:
+```js
+import {setDebugLogging} from 'systemjs-hot-reloader';
+
+setDebugLogging(false);
+```
+
 ## Sample projects
 
 Boilerplate set up for hot reloading modules you can fork and use with 3 simple terminal commands(git clone XXX && npm i && npm start):
