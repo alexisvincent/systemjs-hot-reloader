@@ -37,10 +37,13 @@ class HotReloader extends Emitter {
       if (moduleName === 'index.html' || moduleName === this.jspmConfigFile) {
         document.location.reload(true)
       } else {
+          return (n.indexOf(fullModulePath) !== -1) || (System.loads[n].address.indexOf(fullModulePath) !== -1) 
         System.reload(moduleName).catch((err) => {
           this.emit('moduleRecordNotFound', err)
                     // not found any module for this file, not really an error
         })
+		// also, the module name may not match the address for plugins making use of the SystemJS locate hook,
+        //    so check the address also
       }
     })
 
