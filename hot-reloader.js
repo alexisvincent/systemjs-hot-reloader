@@ -1,7 +1,7 @@
 /* eslint-env browser */
 import 'systemjs-hmr'
 
-import socketIO from 'socket.io-client'
+import * as socketIO from 'socket.io-client'
 import Emitter from 'weakee'
 import debug from 'debug'
 const d = debug('hot-reloader')
