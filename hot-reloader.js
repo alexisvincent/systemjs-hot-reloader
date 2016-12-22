@@ -53,6 +53,19 @@ class HotReloader extends Emitter {
       d('hot reload disconnected from ', backendUrl)
     })
   }
+  reloadAllModules ({exclude, include} = {}) {
+    let toReload = Object.keys(System.loads)
+
+    if (exclude) {
+      toReload = toReload.filter(k => !k.match(exclude))
+    }
+
+    if (include) {
+      toReload = toReload.filter(k => k.match(include))
+    }
+
+    toReload.forEach(moduleName => this.hotReload(moduleName))
+  }
 }
 
 export default HotReloader
