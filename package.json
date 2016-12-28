@@ -67,5 +67,8 @@
       "test/**",
       "default-listener.js"
     ]
-  }
+  },
+  "contributors": [
+    "Alexis Vincent <alexisjohnvincent@gmail.com>"
+  ]
 }
