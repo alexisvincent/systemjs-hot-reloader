@@ -23,8 +23,6 @@ jspm i --dev systemjs-hot-reloader
 ```
 
 ## Usage
-System.trace must be enabled. To do this, add `trace: true` to your config. 
-
 systemjs-hmr needs to load before any modules are imported (different to current behaviour).
 To get this right, in your HTML file where you import your app, first import the hot reloader.
 
