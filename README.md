@@ -88,7 +88,8 @@ export function __unload() {
 ```
 
 ## Credit
-Most of the credit for this awesome engineering feat should go to [Guy Bedford](https://github.com/guybedford). He paved me a way, I simply followed it.
+Most of the credit for this awesome engineering feat should go to [Guy Bedford](https://github.com/guybedford). 
+Originally developed by [@capaj](https://github.com/capaj)
 
 ## Contributing
 Code is written in [![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
@@ -98,4 +99,4 @@ Tests are run as usual: `npm test`
 1. fork it
 2. write your code
 3. open PR
-4. lay back and if you want to speed it up, hit me up on [twitter](https://twitter.com/capajj)
+4. lay back and if you want to speed it up, hit me up on [twitter](https://twitter.com/vincent_alexis)
