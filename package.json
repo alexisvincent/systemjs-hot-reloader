@@ -1,64 +1,60 @@
 {
   "name": "systemjs-hot-reloader",
   "version": "0.6.0",
-  "description": "JSPM utility for hot reloading modules of your app separately",
-  "main": "hot-reloader.js",
+  "description": "Hot Module Replacement for SystemJS",
+  "main": "dist/index.js",
   "jspmNodeConversion": false,
   "scripts": {
-    "build": "babel ./lib -d .",
+    "build": "rollup -c",
     "precommit": "npm run build && npm test",
-    
-    "test": "node run-tests",
+    "test": "echo No tests yet",
     "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/capaj/systemjs-hot-reloader.git"
+    "url": "git+https://github.com/alexisvincent/systemjs-hot-reloader.git"
   },
-  "author": "capajj@gmail.com",
+  "author": "Alexis Vincent <alexisjohnvincent@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/capaj/systemjs-hot-reloader/issues"
+    "url": "https://github.com/alexisvincent/systemjs-hot-reloader/issues"
   },
-  "homepage": "https://github.com/capaj/systemjs-hot-reloader#readme",
-  "dependencies": {
-    "socket.io-client": "^1.4.5",
-    "systemjs-hmr": "^0.1.0",
-    "weakee": "^1.0.0"
+  "homepage": "https://github.com/alexisvincent/systemjs-hot-reloader#readme",
+  "babel": {
+    "presets": [
+      [
+        "env",
+        {
+          "modules": false
+        }
+      ]
+    ],
+    "plugins": [
+      "external-helpers"
+    ]
   },
   "devDependencies": {
-    "babel": "^5.8.23",
-    "babel-cli": "^6.18.0",
+    "babel-plugin-external-helpers": "^6.22.0",
     "babel-preset-env": "^1.1.4",
-    "chai": "^3.3.0",
-    "chokidar-socket-emitter": "^0.5.0",
     "debug": "^2.2.0",
-    "husky": "^0.10.1",
-    "jspm": "^0.16.47",
-    "mocha": "^2.4.5",
-    "standard": "^5.4.1",
-    "systemjs": "^0.19.25"
+    "rollup": "^0.41.4",
+    "rollup-plugin-babel": "^2.7.1",
+    "rollup-plugin-commonjs": "^7.0.0",
+    "rollup-plugin-node-resolve": "^2.0.0",
+    "socket.io-client": "^1.7.3",
+    "systemjs-hmr": "^2.0.2"
   },
   "jspm": {
     "map": {
-      "./default-listener.js": {
+      "./dist/index.js": {
         "node": "@empty",
         "production": "@empty"
+      },
+      "./default": {
+        "node": "@empty",
+        "production": "@empty",
+        "~production": "./dist/default.js"
       }
-    },
-    "dependencies": {
-      "debug": "npm:debug@^2.2.0",
-      "socket.io-client": "github:socketio/socket.io-client@^1.4.4",
-      "systemjs-hmr": "npm:systemjs-hmr@^0.1.0",
-      "weakee": "npm:weakee@^1.0.0"
-    },
-    "devDependencies": {
-      "babel": "npm:babel-core@^5.8.24",
-      "babel-runtime": "npm:babel-runtime@^5.8.24",
-      "core-js": "npm:core-js@^1.1.4",
-      "react": "npm:react@^0.14.3",
-      "react-dom": "npm:react-dom@^0.14.3",
-      "react-tap-event-plugin": "npm:react-tap-event-plugin@^0.2.1"
     }
   },
   "standard": {
@@ -69,6 +65,6 @@
     ]
   },
   "contributors": [
-    "Alexis Vincent <alexisjohnvincent@gmail.com>"
+    "Jiri Spac <capajj@gmail.com>"
   ]
 }
