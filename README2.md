@@ -1,4 +1,7 @@
 # systemjs-hot-reloader
+[![npm version](https://badge.fury.io/js/systemjs-hot-reloader.svg)](https://badge.fury.io/js/systemjs-hot-reloader)
+[![Build Status](https://travis-ci.org/alexisvincent/systemjs-hot-reloader.svg?branch=master)](https://travis-ci.org/alexisvincent/systemjs-hot-reloader)
+
 Hot Module Replacement (HMR) for SystemJS. As you modify your source, `systemjs-hot-reloader` will add, remove, or swap out modules in the running application, without a page refresh (significantly speeding up development time).
 
 `systemjs-hot-reloader` connects via socket.io to an event source such as:
