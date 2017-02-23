@@ -9425,11 +9425,9 @@ function localstorage() {
 }
 });
 
-var _this = undefined;
-
 var d = browser$9('systemjs-hot-reloader');
 
-var index = connect = function connect$$1() {
+var index = (function () {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
   var _Object$assign = Object.assign({
@@ -9442,10 +9440,6 @@ var index = connect = function connect$$1() {
   socket.on('connect', function () {
     d('hot reload connected to watcher on ', host);
     socket.emit('identification', navigator.userAgent);
-    // this.socket.emit('package.json', (pjson) => {
-    //   // self.pjson = pjson // maybe needed in the future?
-    //   this.jspmConfigFile = pjson.jspm.configFile || 'config.js'
-    // })
   });
 
   socket.on('reload', function () {
@@ -9454,8 +9448,8 @@ var index = connect = function connect$$1() {
   });
 
   socket.on('change', function (event) {
-    var moduleName = transform(event.path);
-    if (moduleName === 'index.html' || moduleName === _this.jspmConfigFile) {
+    var moduleName = event.path;
+    if (moduleName === 'index.html') {
       document.location.reload(true);
     } else {
       System.reload(moduleName);
@@ -9470,6 +9464,6 @@ var index = connect = function connect$$1() {
   socket.on('disconnect', function () {
     d('hot reload disconnected from ', backendUrl);
   });
-};
+});
 
 module.exports = index;
