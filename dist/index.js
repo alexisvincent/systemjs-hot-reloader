@@ -8596,7 +8596,7 @@ var index = (function () {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
   var _merge = index$49({
-    host: '//' + document.location.hostname + ':7777'
+    host: '//' + document.location.hostname + ':5776'
   }, options),
       host = _merge.host;
 
