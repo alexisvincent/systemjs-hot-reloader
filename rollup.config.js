@@ -6,15 +6,19 @@ import commonjs from 'rollup-plugin-commonjs'
 export default {
   entry: './lib/index.js',
   dest: './dist/index.js',
+  moduleName: 'systemjs-hot-reloader',
   format: 'cjs',
   // sourceMap: 'inline',
+  external: ['systemjs-hmr'],
   plugins: [
     resolve({
       jsnext: true,
       main: true,
       browser: true,
     }),
-    commonjs(),
+    commonjs({
+      exclude: [ 'node_modules/systemjs-hmr/**']
+    }),
     babel({
       exclude: 'node_modules/**'
     }),

@@ -1,11 +1,13 @@
 {
   "name": "systemjs-hot-reloader",
-  "version": "0.6.0",
+  "version": "1.0.0",
   "description": "Hot Module Replacement for SystemJS",
   "main": "dist/index.js",
   "jspmNodeConversion": false,
+  "registry": "npm",
   "scripts": {
     "build": "rollup -c",
+    "dev": "rollup -c --watch",
     "precommit": "npm run build && npm test",
     "test": "echo No tests yet",
     "prepublish": "npm run build"
@@ -33,29 +35,28 @@
       "external-helpers"
     ]
   },
-  "devDependencies": {
-    "babel-plugin-external-helpers": "^6.22.0",
-    "babel-preset-env": "^1.1.4",
-    "debug": "^2.2.0",
-    "rollup": "^0.41.4",
-    "rollup-plugin-babel": "^2.7.1",
-    "rollup-plugin-commonjs": "^7.0.0",
-    "rollup-plugin-node-resolve": "^2.0.0",
-    "socket.io-client": "^1.7.3",
-    "systemjs-hmr": "^2.0.2"
-  },
   "jspm": {
     "map": {
       "./dist/index.js": {
         "node": "@empty",
-        "production": "@empty"
-      },
-      "./default": {
-        "node": "@empty",
-        "production": "@empty",
-        "~production": "./dist/default.js"
+        "production": "./lib/production.js"
       }
     }
+  },
+  "dependencies": {
+    "systemjs-hmr": "^2.0.5"
+  },
+  "devDependencies": {
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-env": "^1.1.4",
+    "debug": "^2.2.0",
+    "deepmerge": "^1.3.2",
+    "rollup": "^0.41.4",
+    "rollup-plugin-babel": "^2.7.1",
+    "rollup-plugin-commonjs": "^7.0.0",
+    "rollup-plugin-node-resolve": "^2.0.0",
+    "rollup-watch": "^3.2.2",
+    "socket.io-client": "^1.7.3"
   },
   "standard": {
     "ignore": [

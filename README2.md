@@ -4,12 +4,10 @@
 
 Hot Module Replacement (HMR) for SystemJS. As you modify your source, `systemjs-hot-reloader` will add, remove, or swap out modules in the running application, without a page refresh (significantly speeding up development time).
 
-`systemjs-hot-reloader` connects via socket.io to an event source such as:
+`systemjs-hot-reloader` **MUST** be used in conjunction with event source such as:
 - [systemjs-tools](https://github.com/alexisvincent/systemjs-tools) - smart development server
 - [chokidar-socket-emitter](https://github.com/capaj/chokidar-socket-emitter) - simple file watcher
 - [jspm-dev-buddy](https://atom.io/packages/jspm-dev-buddy) - atom plugin
-
-and replaces modules as you code.
 
 `systemjs-hot-reloader` is a thin layer on top of [systemjs-hmr](https://github.com/alexisvincent/systemjs-hmr), which provides the meat of the reloading logic. If you are a library author looking to integrate HMR into your library or want a better understanding of how HMR works in SystemJS then check it out.
 
@@ -18,9 +16,6 @@ Install with your client-side package manager (choose one)
 - `jspm install --dev npm:systemjs-hot-reloader`
 - `yarn add --dev systemjs-hot-reloader`
 - `npm install --save-dev systemjs-hot-reloader`
-
-`systemjs-hot-reloader` will automatically set `SystemJS.trace = true`, so you no longer
-need to set this manually, as with previous versions.
 
 `systemjs-hot-reloader` **MUST** run before your application code otherwise SystemJS
 won't know how to resolve your app's `@hot` imports.
@@ -62,6 +57,9 @@ your jspm config file.
   }
 }
 ```
+
+`systemjs-hot-reloader` will automatically set `SystemJS.trace = true`, so you no longer
+need to set this manually, as with previous versions.
 
 ### Production
 In production, `systemjs-hot-reloader` maps to an empty module so you can leave

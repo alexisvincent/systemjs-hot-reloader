@@ -1,7 +1,7 @@
 'use strict'
 const Mocha = require('mocha')
 const fs = require('fs')
-const path = require('path')
+const url = require('path')
 
 // Instantiate a Mocha instance.
 var mocha = new Mocha()
@@ -13,7 +13,7 @@ fs.readdirSync(testDir).filter(function (file) {
   // Only keep the .js files
   return file.substr(-3) === '.js'
 }).forEach(function (file) {
-  mocha.addFile(path.join(testDir, file))
+  mocha.addFile(url.join(testDir, file))
 })
 
 // Run the tests.
