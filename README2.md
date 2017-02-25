@@ -2,14 +2,14 @@
 [![npm version](https://badge.fury.io/js/systemjs-hot-reloader.svg)](https://badge.fury.io/js/systemjs-hot-reloader)
 [![Build Status](https://travis-ci.org/alexisvincent/systemjs-hot-reloader.svg?branch=master)](https://travis-ci.org/alexisvincent/systemjs-hot-reloader)
 
-Hot Module Replacement (HMR) for SystemJS. As you modify your source, `systemjs-hot-reloader` will add, remove, or swap out modules in the running application, without a page refresh (significantly speeding up development time).
+Official Hot Module Replacement (HMR) for [SystemJS](https://github.com/systemjs/systemjs). As you modify your source, `systemjs-hot-reloader` will add, remove, or swap out modules in the running application, without a page refresh (significantly speeding up development time).
 
 `systemjs-hot-reloader` **MUST** be used in conjunction with event source such as:
 - [systemjs-tools](https://github.com/alexisvincent/systemjs-tools) - smart development server
 - [chokidar-socket-emitter](https://github.com/capaj/chokidar-socket-emitter) - simple file watcher
 - [jspm-dev-buddy](https://atom.io/packages/jspm-dev-buddy) - atom plugin
 
-`systemjs-hot-reloader` is a thin layer on top of [systemjs-hmr](https://github.com/alexisvincent/systemjs-hmr), which provides the meat of the reloading logic. If you are a library author looking to integrate HMR into your library or want a better understanding of how HMR works in SystemJS then check it out.
+`systemjs-hot-reloader` is a thin layer on top of [systemjs-hmr](https://github.com/alexisvincent/systemjs-hmr), which provides the meat of the reloading logic. If you are a library author looking to integrate HMR into your library or want a better understanding of how HMR works in [SystemJS](https://github.com/systemjs/systemjs) then check it out.
 
 ## Usage
 Install with your client-side package manager (choose one)
@@ -63,40 +63,51 @@ need to set this manually, as with previous versions.
 In production, `systemjs-hot-reloader` maps to an empty module so you can leave
 the `systemjs-hot-reloader` import in your `index.html`.
 
-## State Hydration and Module Unloading
-As described [here](https://github.com/alexisvincent/systemjs-hmr#state-hydration-and-safe-unloads), state hydration is handled in the following way.
+### State Hydration and Safe Module Unloads
+As described [here](https://github.com/alexisvincent/systemjs-hmr#state-hydration-and-safe-module-unloads), state hydration is handled in the following way.
+
+When hot module replacement is added to an application there are a few modifications we may need to
+make to our code base, since the assumption that your code will run exactly once has been broken.
+
+When a new version of a module is imported it might very well want to reinitialize it's own state based
+on the state of the previous module instance, to deal with this case and to cleanly unload your module
+from the registry you can import the previous instance of your module as you would any other module,
+as well as export an `__unload` function.
 
 ```javascript
-// You can import the previous module instance from '@hot'
-// During the first load, module == false
+/**
+ * You can import the previous instance of your module as you would any other module.
+ * On first load, module == false.
+ */
 import { module } from '@hot'
 
 /**
-* When a new version of a module is imported it will probably want to
-* reinitialize it's own state based on the state of the previous version.
-* Since all exports of the previous instance are available, you can
-* simply export any state you might want to persist.
-*/
+ * Since all exports of the previous instance are available, you can simply export any state you might want to persist.
+ *
+ * Here we set and export the state of the file. If 'module == false' (first load),
+ * then initialise the state to {}, otherwise set the state to the previously exported
+ * state.
+ */
 export const _state = module ? module._state : {}
 
 /**
- * You can safely unload/unmount/cleanup anything by exporting an unload function
- * and then calling it whenever you reload (if module is something other then false)
+ * If you're module needs to run some 'cleanup' code before being unloaded from the system, it can do so,
+ * by exporting an `__unload` function that will be run just before the module is deleted from the registry.
+ *
+ * Here you would unsubscribe from listeners, or any other task that might cause issues in your application,
+ * or prevent the module from being garbage collected.
+ *
+ * See SystemJS.unload API for more information.
  */
 export const __unload = () => {
     console.log('Unload something (unsubscribe from listeners, disconnect from socket, etc...)')
     // force unload React components
     ReactDOM.unmountComponentAtNode(DOMNode);	// your container node
 }
-
-if(module)
-    module.__unload()
 ```
 
-There is also an alternative state hydration technique described [here](https://github.com/alexisvincent/systemjs-hmr/issues/2#issuecomment-258653791), however,
-although stable it is likely not to remain for much longer, for the reasons described in the thread.
-
 ## React
+### This section isn't yet finished. see https://github.com/gaearon/react-hot-loader/tree/next/docs for full instructions
 If you also want the added benefit of your react component state persisting across
 reloads, you can use [Dan Abramov's](https://github.com/gaearon) excellent [react-hot-loader](https://github.com/gaearon/react-hot-loader) project, in conjunction with this one.
 
@@ -104,10 +115,8 @@ reloads, you can use [Dan Abramov's](https://github.com/gaearon) excellent [reac
 
 Install with your client-side package manager (choose one)
 - `jspm install --dev npm:react-hot-loader`
-- `yarn add --dev systemjs-hot-reloader`
-- `npm install --save-dev systemjs-hot-reloader`
-
-... TODO Should probably just send a PR to https://github.com/gaearon/react-hot-loader/tree/next/docs
+- `yarn add --dev react-hot-loader'
+- `npm install --save-dev react-hot-loader`
 
 ## Example Projects
 - [React](https://github.com/capaj/jspm-react)
