@@ -115,7 +115,7 @@ reloads, you can use [Dan Abramov's](https://github.com/gaearon) excellent [reac
 
 Install with your client-side package manager (choose one)
 - `jspm install --dev npm:react-hot-loader`
-- `yarn add --dev react-hot-loader'
+- `yarn add --dev react-hot-loader`
 - `npm install --save-dev react-hot-loader`
 
 ## Example Projects
