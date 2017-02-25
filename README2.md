@@ -49,11 +49,9 @@ your jspm config file.
 ```js
 {
   ...
-  "packages": {
+  "map": {
     ...
-    "@hot": {
-      "build": false
-    }
+    "@hot": "@empty"
   }
 }
 ```
