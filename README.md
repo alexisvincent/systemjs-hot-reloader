@@ -1,98 +1,133 @@
 # systemjs-hot-reloader
-connects via socket.io to an event source such as:
-- [chokidar-socket-emitter](https://github.com/capaj/chokidar-socket-emitter) 
-- atom plugin [jspm-dev-buddy](https://atom.io/packages/jspm-dev-buddy)
+[![npm version](https://badge.fury.io/js/systemjs-hot-reloader.svg)](https://badge.fury.io/js/systemjs-hot-reloader)
+[![Build Status](https://travis-ci.org/alexisvincent/systemjs-hot-reloader.svg?branch=master)](https://travis-ci.org/alexisvincent/systemjs-hot-reloader)
 
-and reloads your ES6 modules as you change them. Similar to browserify hot module replacement, but running in your browser.
+Official Hot Module Replacement (HMR) for [SystemJS](https://github.com/systemjs/systemjs). As you modify your source, `systemjs-hot-reloader` will add, remove, or swap out modules in the running application, without a page refresh (significantly speeding up development time).
 
-## Install
-```
-jspm i --dev systemjs-hot-reloader
-```
+`systemjs-hot-reloader` **MUST** be used in conjunction with event source such as:
+- [systemjs-tools](https://github.com/alexisvincent/systemjs-tools) - smart development server
+- [chokidar-socket-emitter](https://github.com/capaj/chokidar-socket-emitter) - simple file watcher
+- [jspm-dev-buddy](https://atom.io/packages/jspm-dev-buddy) - atom plugin
+
+`systemjs-hot-reloader` is a thin layer on top of [systemjs-hmr](https://github.com/alexisvincent/systemjs-hmr), which provides the meat of the reloading logic. If you are a library author looking to integrate HMR into your library or want a better understanding of how HMR works in [SystemJS](https://github.com/systemjs/systemjs) then check it out.
 
 ## Usage
-### JSPM 0.17.x
-Described by [@guybedford](https://github.com/guybedford/) himself:  
-http://jspm.io/0.17-beta-guide/hot-reloading.html
-### JSPM 0.16.x
-#### Connect to default event emitter  port
-Use when your event emitter is available at http://localhost:5776 (the default). Include in your `index.html`:
-```javascript
-System.trace = true
-System.import('./app.js')
+Install with your client-side package manager (choose one)
+- `jspm install --dev npm:systemjs-hot-reloader`
+- `yarn add --dev systemjs-hot-reloader`
+- `npm install --save-dev systemjs-hot-reloader`
+
+`systemjs-hot-reloader` **MUST** run before your application code otherwise SystemJS
+won't know how to resolve your app's `@hot` imports.
+
+Assuming your app entry point is `app.js`, wrap your import statement so that you first load `systemjs-hot-reloader`.
+
+```html
+<script>
+    System.import('systemjs-hot-reloader').then((connect) => {
+        connect()
+        System.import('app.js')
+    })
+</script>
 ```
-At the top of your es6 code:
-```javascript
-import 'systemjs-hot-reloader/default-listener.js'
+
+`connect` can be passed a number of custom options. To initialise a custom connection
+
+```html
+<script>
+    System.import('systemjs-hot-reloader').then((connect) => {
+        connect({ host: '//localhost:1234' })
+        System.import('app.js')
+    })
+</script>
 ```
-Maps to empty module on production builds, so no needs for any if statements. 
-#### Connect to custom event emitter port
-Include in your `index.html`:
-```javascript
-if (location.origin.match(/localhost/)) { 
-  System.trace = true
-  System.import('capaj/systemjs-hot-reloader').then(function(HotReloader){
-    new HotReloader.default('http://localhost:8090')  // chokidar-socket-emitter port
-  })
+
+Until SystemJS does automatically, you need to tell SystemJS how to handle
+the `@hot` imports when building your app. To do this, add the following to
+your jspm config file.
+
+```js
+{
+  ...
+  "map": {
+    ...
+    "@hot": "@empty"
+  }
 }
-System.import('./app.js')
 ```
-You can drop the if statement, but it is nice and convenient to load reloader only when on localhost. That way you can go into production without changing anything.
 
-## Sample projects
+`systemjs-hot-reloader` will automatically set `SystemJS.trace = true`, so you no longer
+need to set this manually, as with previous versions.
 
-Boilerplate set up for hot reloading modules you can fork and use with 3 simple terminal commands(git clone XXX && npm i && npm start):
+### Production
+In production, `systemjs-hot-reloader` maps to an empty module so you can leave
+the `systemjs-hot-reloader` import in your `index.html`.
+
+### State Hydration and Safe Module Unloads
+As described [here](https://github.com/alexisvincent/systemjs-hmr#state-hydration-and-safe-module-unloads), state hydration is handled in the following way.
+
+When hot module replacement is added to an application there are a few modifications we may need to
+make to our code base, since the assumption that your code will run exactly once has been broken.
+
+When a new version of a module is imported it might very well want to reinitialize it's own state based
+on the state of the previous module instance, to deal with this case and to cleanly unload your module
+from the registry you can import the previous instance of your module as you would any other module,
+as well as export an `__unload` function.
+
+```javascript
+/**
+ * You can import the previous instance of your module as you would any other module.
+ * On first load, module == false.
+ */
+import { module } from '@hot'
+
+/**
+ * Since all exports of the previous instance are available, you can simply export any state you might want to persist.
+ *
+ * Here we set and export the state of the file. If 'module == false' (first load),
+ * then initialise the state to {}, otherwise set the state to the previously exported
+ * state.
+ */
+export const _state = module ? module._state : {}
+
+/**
+ * If you're module needs to run some 'cleanup' code before being unloaded from the system, it can do so,
+ * by exporting an `__unload` function that will be run just before the module is deleted from the registry.
+ *
+ * Here you would unsubscribe from listeners, or any other task that might cause issues in your application,
+ * or prevent the module from being garbage collected.
+ *
+ * See SystemJS.unload API for more information.
+ */
+export const __unload = () => {
+    console.log('Unload something (unsubscribe from listeners, disconnect from socket, etc...)')
+    // force unload React components
+    ReactDOM.unmountComponentAtNode(DOMNode);	// your container node
+}
+```
+
+## React
+### This section isn't yet finished. see https://github.com/gaearon/react-hot-loader/tree/next/docs for full instructions
+If you also want the added benefit of your react component state persisting across
+reloads, you can use [Dan Abramov's](https://github.com/gaearon) excellent [react-hot-loader](https://github.com/gaearon/react-hot-loader) project, in conjunction with this one.
+
+`react-hot-loader` functions as a babel transform for your react apps, so we need to add it as a babel plugin.
+
+Install with your client-side package manager (choose one)
+- `jspm install --dev npm:react-hot-loader`
+- `yarn add --dev react-hot-loader`
+- `npm install --save-dev react-hot-loader`
+
+## Example Projects
 - [React](https://github.com/capaj/jspm-react)
 - [Inferno](https://github.com/capaj/jspm-inferno)
 - [Mithril.js](https://github.com/capaj/jspm-mithril)
 - [Angular 2](https://github.com/capaj/jspm-ng2)
 - [Angular - NG6-starter](https://github.com/capaj/NG6-starter)
 
-
-## Why
-
-We're javascript programmers. We should not need to bundle our apps for development. Many folks dislike JSPM because of how slow it is. JSPM deserves another shot, because it can be faster, more robust and more reliable than most alternatives. This simple package proves it. Especially for larger codebases, SPAs and such-reliable hot reloadable modules are a necessray for meaningful feedback loop. React-transform is hacky-very often a change in a source code doesn't manifestate after a reload. Read [this article](https://medium.com/@dan_abramov/hot-reloading-in-react-1140438583bf#.6gk8gzb72) for more info on React-transform vs reloading whole modules.
-
-## Preserving state
-If you want some state to persist through hot reload, just put it in a module separate from the component. I personally use [POJOs with observation](https://github.com/mweststrate/mobservable), but you are free to use any kind of value store, as long as it sits in separate module from your reloaded component.
-Another way to do this is by adding a [simple systemjs-hot-reloader-store utility](https://github.com/peteruithoven/systemjs-hot-reloader-store).
-
-## How
-When a change event is emitted on socket.io, we match a module in System._loader.moduleRecords.
-If a match is found, we then aggressively delete the changed module and recursively all modules which import it directly or indirectly via other modules. This ensures we always have the latest version of code running, but we don't force the browser into unnecessary work.
-Last step is to import again all modules we deleted, by calling import on the one that changed-module hierarchy will make sure all get loaded again.
-
-## Hooks
-### Reload
-See example: https://github.com/capaj/systemjs-hot-reloader/pull/23#issue-119311376
-
-### Unload
-Any module, which leaves side effects in the browser and you want to hot-reload properly should export
-```javascript
-export function __unload(){
-	// cleanup here
-}
-```
-This is needed for example for [Angular](https://github.com/capaj/NG6-starter/blob/eb988ef00685390618b5dad57635ce80c6d52680/client/app/app.js#L42), which needs clean DOM every time it bootstraps.
-
-This is also needed for some React components, like the Redux Provider and React Router. A crude way to force reloading of React components: 
-``` javascript
-export function __unload() {
-  // force unload React components
-  ReactDOM.unmountComponentAtNode(DOMNode);	// your container node
-}
-```
+## Contributing
+I've tried to keep both this, and [systemjs-hmr](https://github.com/alexisvincent/systemjs-hmr) as beginner friendly as possible with lots of comments. So please feel free to browse the code and contribute back to the project.
 
 ## Credit
-Most of the credit for this awesome engineering feat should go to [Guy Bedford](https://github.com/guybedford). 
-Originally developed by [@capaj](https://github.com/capaj)
+This project and the first HMR implementation was originally written by [@capaj](https://github.com/capaj), and none of this would have been possible without [Guy Bedford](https://github.com/guybedford).
 
-## Contributing
-Code is written in [![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
-
-Tests are run as usual: `npm test`
-
-1. fork it
-2. write your code
-3. open PR
-4. lay back and if you want to speed it up, hit me up on [twitter](https://twitter.com/vincent_alexis)
