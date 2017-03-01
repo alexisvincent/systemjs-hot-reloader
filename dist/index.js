@@ -8590,15 +8590,28 @@ return deepmerge
 }));
 });
 
+var toConsumableArray = function (arr) {
+  if (Array.isArray(arr)) {
+    for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+
+    return arr2;
+  } else {
+    return Array.from(arr);
+  }
+};
+
 var d = browser$9('systemjs-hot-reloader');
 
 var index = (function () {
-  var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-  var _merge = index$49({
+  var options = index$49({
+    entries: [],
     host: '//' + document.location.hostname + ':5776'
-  }, options),
-      host = _merge.host;
+  }, opts);
+
+  var host = options.host;
+
 
   var socket = index$1(host);
 
@@ -8612,7 +8625,7 @@ var index = (function () {
         entries = _ref.entries;
 
     d('reloading', url);
-    System.reload(SystemJS.baseURL + url, { entries: entries });
+    System.reload(SystemJS.baseURL + url, { entries: [].concat(toConsumableArray(entries), toConsumableArray(options.entries)) });
   };
 
   socket.on('connect', function () {
