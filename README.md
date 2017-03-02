@@ -69,9 +69,7 @@ The following shows an example worker bootstrap script. It imports and configure
 importScripts('../node_modules/systemjs/dist/system.src.js', './system.config.js')
 
 System.import('systemjs-hot-reloader').then(function (connect) {
-    if (connect instanceof Function) {
-        connect()
-    }
+    connect()
     System.import('WorkerImpl.js')
 })
 ```
@@ -92,7 +90,7 @@ connect({
 
 ### Production
 In production, `systemjs-hot-reloader` maps to an empty module so you can leave
-the `systemjs-hot-reloader` import in your `index.html`. Just make sure, that `connect()` is only invoked, if it is available (`if (connect instanceof Function)`).
+the `systemjs-hot-reloader` import in your `index.html`.
 
 ### State Hydration and Safe Module Unloads
 As described [here](https://github.com/alexisvincent/systemjs-hmr#state-hydration-and-safe-module-unloads), state hydration is handled in the following way.
