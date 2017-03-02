@@ -61,9 +61,38 @@ your jspm config file.
 `systemjs-hot-reloader` will automatically set `SystemJS.trace = true`, so you no longer
 need to set this manually, as with previous versions.
 
+### Worker usage
+Todays apps often use workers to move time intensive processing out of the browsers GUI thread. In such a case, use of hot-reloading is beneficial for the worker threads, too. Therefore `systemjs-hot-reloader` and [systemjs-hmr](https://github.com/alexisvincent/systemjs-hmr) can be used from workers.
+
+The following shows an example worker bootstrap script. It imports and configures `systemjs`, imports and connects the `systemjs-hot-reloader` and imports the implementation of the worker.
+```js
+importScripts('../node_modules/systemjs/dist/system.src.js', './system.config.js')
+
+System.import('systemjs-hot-reloader').then(function (connect) {
+    if (connect instanceof Function) {
+        connect()
+    }
+    System.import('WorkerImpl.js')
+})
+```
+
+Hints:
+* Using a single `systemjs` configuration (`system.config.js` in this case) for the GUI/main and the worker threads simplyfies the setup.
+* The worker is instantiated as usal: `new Worker("WorkerBootstrap.js")`
+
+### Circular dependencies / detection of entry points
+In case of a module change, the whole dependency tree from the changed module up to all entry points is reloaded. The entry points into your application are detected automatically (modules that are not imported by another module). However, this is not always accurate. You should provide an explicit configuration of your entries in case of circular dependencies. E.g. if your entry module is imported by another module, it is not detected as an entry point and not reloaded.
+
+Configuration of entries is simple. Just provide a list of entries to `connect()`:
+```js
+connect({
+    entries: [System.resolveSync('src/api/worker/WorkerImpl')]
+})
+```
+
 ### Production
 In production, `systemjs-hot-reloader` maps to an empty module so you can leave
-the `systemjs-hot-reloader` import in your `index.html`.
+the `systemjs-hot-reloader` import in your `index.html`. Just make sure, that `connect()` is only invoked, if it is available (`if (connect instanceof Function)`).
 
 ### State Hydration and Safe Module Unloads
 As described [here](https://github.com/alexisvincent/systemjs-hmr#state-hydration-and-safe-module-unloads), state hydration is handled in the following way.
