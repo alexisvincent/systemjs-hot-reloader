@@ -8602,12 +8602,15 @@ var toConsumableArray = function (arr) {
 
 var d = browser$9('systemjs-hot-reloader');
 
+var isBrowser = typeof window !== 'undefined';
+var isWorker = typeof WorkerGlobalScope !== 'undefined';
+
 var index = (function () {
   var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
   var options = index$49({
     entries: [],
-    host: '//' + document.location.hostname + ':5776'
+    host: '//' + location.hostname + ':5776'
   }, opts);
 
   var host = options.host;
@@ -8617,7 +8620,9 @@ var index = (function () {
 
   var reloadPage = function reloadPage() {
     d('whole page reload requested');
-    document.location.reload(true);
+    if (isBrowser) {
+      location.reload(true);
+    }
   };
 
   var fileChanged = function fileChanged(_ref) {
@@ -8657,9 +8662,15 @@ var index = (function () {
     });
 
     // emitting errors for jspm-dev-buddy
-    window.onerror = function (err) {
-      socket.emit('error', err);
-    };
+    if (isBrowser) {
+      window.onerror = function (err) {
+        socket.emit('error', err);
+      };
+    } else if (isWorker) {
+      self.onerror = function (err) {
+        socket.emit('error', err);
+      };
+    }
   }
 });
 

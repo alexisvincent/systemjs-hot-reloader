@@ -17,6 +17,8 @@ Install with your client-side package manager (choose one)
 - `yarn add --dev systemjs-hot-reloader`
 - `npm install --save-dev systemjs-hot-reloader`
 
+`systemjs-hot-reloader` requires SystemJS `>0.19.x or >=0.20.8`.
+
 `systemjs-hot-reloader` **MUST** run before your application code otherwise SystemJS
 won't know how to resolve your app's `@hot` imports.
 
