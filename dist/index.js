@@ -8970,7 +8970,7 @@ var index = (function () {
     socket.on('reload', reloadPage);
 
     socket.on('change', function (event) {
-      if (event.path === 'index.html') reloadPage();else fileChanged({ url: event.path });
+      if (event.path === 'index.html') reloadPage();else if (options.fileChanged) options.fileChanged({ url: event.path }, fileChanged, options);else fileChanged({ url: event.path });
     });
 
     // emitting errors for jspm-dev-buddy

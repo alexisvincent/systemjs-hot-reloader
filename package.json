@@ -1,6 +1,6 @@
 {
-  "name": "systemjs-hot-reloader",
-  "version": "1.1.1",
+  "name": "systemjs-hot-reloader-example",
+  "version": "1.1.2",
   "description": "Hot Module Replacement for SystemJS",
   "main": "dist/index.js",
   "jspmNodeConversion": false,
