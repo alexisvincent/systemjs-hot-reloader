@@ -8942,7 +8942,7 @@ var index = (function () {
         entries = _ref$entries === undefined ? {} : _ref$entries;
 
     d('reloading', url);
-    System.reload(SystemJS.baseURL + url, { entries: [].concat(toConsumableArray(entries), toConsumableArray(options.entries)) });
+    return System.reload(SystemJS.baseURL + url, { entries: [].concat(toConsumableArray(entries), toConsumableArray(options.entries)) });
   };
 
   socket.on('connect', function () {
