@@ -8959,7 +8959,7 @@ var index = (function () {
     switch (event.type) {
       case 'hmr':
         {
-          if (options.fileChanged) options.fileChanged(event, fileChanged);else fileChanged(event);
+          if (options.fileChanged) options.fileChanged(event, fileChanged, options);else fileChanged(event);
           break;
         }
     }
